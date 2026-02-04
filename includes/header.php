@@ -1,0 +1,61 @@
+    
+    <header class="navbar">
+
+    <a href="\php\Event-management-system\index.php"><div class="logo">
+         <img src="/php/Event-management-system/assets/images/logo.png" alt="logo">
+
+        </div></a>
+        
+    
+        <nav class="nav-links" id="navLinks">
+            <a href="#">Home</a>
+            <a href="#about">About</a>
+            <a href="event/event_cards.php">Events</a>
+            <a href="#services">Services</a>
+            <a href="#">Contact</a>
+        </nav>
+
+        <div class="nav-icons">
+            <i class="fa-regular fa-user" id="profileIcon"></i>
+            <i class="fa-solid fa-bars" id="menuBtn"></i>
+        </div>
+    </header>
+
+    <div class="profile-popup" id="profilePopup">
+    <?php if(!empty($_SESSION['user_id'])): ?>
+
+        <?php if($_SESSION['role'] === 'admin'): ?>
+            <a href="admin/admin_dashboard.php">Admin Dashboard</a>
+
+        <?php else: ?>
+            <a href="user_profile.php">
+                <i class="fa-regular fa-user"></i>
+                <?php echo $_SESSION['user_name'];?>
+            </a>
+
+            <?php if($_SESSION['role'] !== 'organizer'): ?>
+                <a href="organizer/organizer_form.php" class="organizer_form_btn">
+                    <i class="fa-solid fa-user-plus"></i> Become Organizer
+                </a>
+            <?php else: ?>
+                <a href="event/event_form.php" class="organizer_form_btn">
+                    <i class="fa-solid fa-calendar-plus"></i> Add Event
+                </a>
+            <?php endif; ?>
+
+        <?php endif; ?>
+    
+        <a href="logout.php" class="logout-btn">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </a>
+
+    <?php else: ?>
+
+        <a href="auth/login.php">Log In</a>
+
+    <?php endif; ?>
+
+
+    </div>
+
+    

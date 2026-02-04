@@ -1,0 +1,265 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e6ecf3, #f8fafc);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Animation keyframes */
+@keyframes fadePopup {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+/* ================= LOGIN CSS ================= */
+
+.login-wrapper {
+  width: 100%;
+  max-width: 900px;
+  background: #fff;
+  display: flex;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: fadePopup 0.8s ease forwards;
+}
+
+/* LEFT */
+.login-left {
+  flex: 1;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: #fff;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.login-left img {
+  width: 180px;
+  margin-bottom: 20px;
+}
+
+.login-left h2 {
+  margin-bottom: 10px;
+}
+
+.login-left p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* RIGHT */
+.login-right {
+  flex: 1;
+  padding: 40px;
+}
+
+.login-right h2 {
+  margin-bottom: 25px;
+  color: #2c5364;
+}
+
+/* INPUTS */
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-group i {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #666;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: 0.3s;
+}
+
+.input-group input:focus {
+  border-color: #00c6ff;
+  box-shadow: 0 0 0 2px rgba(0, 198, 255, 0.2);
+}
+
+/* BUTTON */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg, #7aa8b7, #2f5e83);
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 198, 255, 0.4);
+}
+
+/* LINKS */
+.extra-links {
+  margin-top: 20px;
+  font-size: 15px;
+}
+
+.extra-links a {
+  color: #0072ff;
+  text-decoration: none;
+}
+
+.extra-links a:hover {
+  text-decoration: underline;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .login-wrapper {
+    flex-direction: column;
+   
+  }
+
+  .login-left {
+    padding: 30px;
+  }
+
+  .login-left img {
+    width: 140px;
+  }
+  .extra-links{
+    font-size: 10px;
+  }
+
+}
+
+/* ================= REGISTER CSS ================= */
+
+.auth-wrapper {
+  width: 100%;
+  max-width: 900px;
+  background: #ffffff;
+  display: flex;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+  animation: fadePopup 0.8s ease forwards;
+}
+
+/* LEFT */
+.auth-left {
+  flex: 1;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: #ffffff;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.auth-left img {
+  width: 170px;
+  margin-bottom: 20px;
+}
+
+.auth-left p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* RIGHT */
+.auth-right {
+  flex: 1;
+  padding: 40px;
+}
+
+.auth-right h2 {
+  margin-bottom: 25px;
+  color: #1f2933;
+}
+
+/* INPUTS */
+.input-group {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.input-group i {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #6b7280;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  transition: 0.3s;
+}
+
+.input-group input:focus {
+  border-color: #00c6ff;
+  box-shadow: 0 0 0 2px rgba(0,198,255,0.25);
+}
+
+/* BUTTON */
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg,  #7aa8b7, #2f5e83);
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0,198,255,0.4);
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .auth-wrapper {
+    flex-direction: column;
+  }
+
+  .auth-left {
+    padding: 30px;
+  }
+
+  .auth-left img {
+    width: 140px;
+  }
+}
