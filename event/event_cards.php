@@ -32,7 +32,9 @@
   <div class="category" data-cat="corporate">Corporate</div>
   <div class="category" data-cat="birthday">Birthday</div>
 </div>
-
+<div>
+  <p>hello</p>
+</div>
 <?php
 require "../includes/db.php";
 $result = mysqli_query($conn,"SELECT * FROM events WHERE status='approved'");
