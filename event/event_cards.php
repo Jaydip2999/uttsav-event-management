@@ -14,7 +14,7 @@
 <body>
   
 <?php
-
+session_start();
  include "../includes/header.php";?>
 <section class="events-page">
 
@@ -64,32 +64,11 @@ $result = mysqli_query($conn,"SELECT * FROM events WHERE status='approved'");
 </section>
 
 <?php
-include"../includes/header.php";  
+// include"../includes/header.php";  
 ?>
-<script>
-lucide.createIcons();
 
-/* search */
-document.getElementById("searchInput").addEventListener("keyup",function(){
-  let v=this.value.toLowerCase();
-  document.querySelectorAll(".event-card").forEach(c=>{
-    c.style.display=c.innerText.toLowerCase().includes(v)?"":"none";
-  });
-});
-
-/* category */
-document.querySelectorAll(".category").forEach(cat=>{
-  cat.onclick=()=>{
-    document.querySelectorAll(".category").forEach(c=>c.classList.remove("active"));
-    cat.classList.add("active");
-    let t=cat.dataset.cat;
-    document.querySelectorAll(".event-card").forEach(c=>{
-      c.style.display=(t==="all"||c.dataset.cat===t)?"":"none";
-    });
-  }
-});
-</script>
 <?php include"../includes/footer.php"; ?>
-<script src="/php/Event-management-system/assets/script.js"></script>
+<script src="../assets/script.js"></script>
+
 </body>
 </html>

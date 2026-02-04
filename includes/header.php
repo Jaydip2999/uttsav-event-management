@@ -8,10 +8,10 @@
         
     
         <nav class="nav-links" id="navLinks">
-            <a href="#">Home</a>
-            <a href="#about">About</a>
-            <a href="event/event_cards.php">Events</a>
-            <a href="#services">Services</a>
+            <a href="\php\Event-management-system\index.php">Home</a>
+           <a href="\php\Event-management-system\index.php#about">About</a>
+            <a href="\php\Event-management-system\event/event_cards.php">Events</a>
+            <a href="\php\Event-management-system\index.php#services">Services</a>
             <a href="#">Contact</a>
         </nav>
 
@@ -51,7 +51,7 @@
 
     <?php else: ?>
 
-        <a href="auth/login.php">Log In</a>
+        <a href="/php/Event-management-system/auth/login.php">Log In</a>
 
     <?php endif; ?>
 

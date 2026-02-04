@@ -53,3 +53,46 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+// ===================event cards search and category ============
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // lucide icons
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+
+    // 🔍 Search
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.addEventListener("keyup", function () {
+            let v = this.value.toLowerCase();
+            document.querySelectorAll(".event-card").forEach(card => {
+                card.style.display = card.innerText.toLowerCase().includes(v) ? "" : "none";
+            });
+        });
+    }
+
+    // 🏷 Category Filter
+    document.querySelectorAll(".category").forEach(cat => {
+        cat.addEventListener("click", function () {
+
+            // active class
+            document.querySelectorAll(".category").forEach(c => c.classList.remove("active"));
+            this.classList.add("active");
+
+            let selectedCat = this.dataset.cat.toLowerCase();
+
+            document.querySelectorAll(".event-card").forEach(card => {
+                let eventCat = card.dataset.cat.toLowerCase();
+
+                if (selectedCat === "all" || eventCat === selectedCat) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        });
+    });
+
+});
