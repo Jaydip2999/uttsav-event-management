@@ -61,7 +61,6 @@ require "../includes/db.php";
           <?php if($row['status']=='pending'){ ?>
            <a class="btn approve" href="event_action.php?id=<?= $row['id']; ?>&type=approve">Approve</a>
             <a class="btn reject" href="event_action.php?id=<?= $row['id']; ?>&type=reject">Reject</a>
-
           <?php } else { ?>
             -
           <?php } ?>

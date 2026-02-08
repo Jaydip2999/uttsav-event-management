@@ -2,257 +2,331 @@
 session_start();
 require_once "../includes/db.php";
 
-// ✅ Login check
 if(!isset($_SESSION['user_id'])){
     header("Location: auth/login.php");
     exit;
 }
 
-// Fetch organizer info
 $user_id = $_SESSION['user_id'];
-$org_query = "SELECT * FROM organizers WHERE user_id='$user_id'";
-$org_result = mysqli_query($conn, $org_query);
-$organizer = mysqli_fetch_assoc($org_result);
 
-$success = '';
-$error = '';
+// Fetch organizer
+$org_stmt = $conn->prepare("SELECT id FROM organizers WHERE user_id = ?");
+$org_stmt->bind_param("i",$user_id);
+$org_stmt->execute();
+$organizer = $org_stmt->get_result()->fetch_assoc();
 
-// ✅ Handle form submission
+$success = $error = "";
+
 if(isset($_POST['submit'])){
 
-    $title = mysqli_real_escape_string($conn,$_POST['title']);
-    $short_description = mysqli_real_escape_string($conn,$_POST['short_description']);
-    $description = mysqli_real_escape_string($conn,$_POST['description']);
-    $event_date = $_POST['event_date'];
-    $event_time = $_POST['event_time'];
-    $location = mysqli_real_escape_string($conn,$_POST['location']);
-    $price = $_POST['price'] ?? 0;
-    $highlight1 = mysqli_real_escape_string($conn,$_POST['highlight1']);
-    $highlight2 = mysqli_real_escape_string($conn,$_POST['highlight2']);
-    $highlight3 = mysqli_real_escape_string($conn,$_POST['highlight3']);
-    $highlight4 = mysqli_real_escape_string($conn,$_POST['highlight4']);
+    $title       = $_POST['title'];
+    $description = $_POST['description'];
+    $event_date  = $_POST['event_date'];
+    $event_time  = $_POST['event_time'];
+    $location    = $_POST['location'];
+    $category    = $_POST['category'];
+    $price       = $_POST['price'] ?? 0;
+    $h1          = $_POST['highlight1'];
+    $h2          = $_POST['highlight2'];
+    $h3          = $_POST['highlight3'];
+    $h4          = $_POST['highlight4'];
 
-    // ✅ Handle main image upload
-    $image = '';
-    if(isset($_FILES['image']) && $_FILES['image']['error'] == 0){
-        $upload_dir = "assets/images/events/";
-        if(!is_dir($upload_dir)) mkdir($upload_dir,0777,true);
-        $image = time().'_'.basename($_FILES['image']['name']);
-        $target_file = $upload_dir.$image;
-        if(move_uploaded_file($_FILES['image']['tmp_name'],$target_file)){
-            $image = $target_file;
-        } else {
-            $error = "Failed to upload main image!";
-        }
-    }
+    /* Image Upload */
+  $uploadDir = "../assets/images/events/";
 
-    if(empty($error)){
-        $sql = "INSERT INTO events 
-        (organizer_id,title,short_description,description,image,event_date,event_time,location,price,status)
-        VALUES
-        ('{$organizer['id']}','$title','$short_description','$description','$image','$event_date','$event_time','$location','$price','pending')";
-
-        if(mysqli_query($conn,$sql)){
-            $success = "Event submitted successfully! Waiting for admin approval.";
-        } else {
-            $error = "Database Error: ".mysqli_error($conn);
-        }
-    }
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0777, true);
 }
 
+$imageName = time() . "_" . basename($_FILES['image']['name']);
+move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $imageName);
+
+$image = $imageName;
+
+    /* Insert Event (TABLE MATCHED) */
+    $stmt = $conn->prepare("
+        INSERT INTO events
+        (organizer_id,title,description,image,event_date,event_time,location,category,price,
+        highlight1,highlight2,highlight3,highlight4)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+    ");
+
+    $stmt->bind_param(
+        "issssssisssss",
+        $organizer['id'],$title,$description,$image,
+        $event_date,$event_time,$location,$category,$price,
+        $h1,$h2,$h3,$h4
+    );
+
+    if($stmt->execute()){
+        $success = " Event submitted successfully! Waiting for admin approval.";
+    }else{
+        $error = "Something went wrong!";
+    }
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Submit New Event</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/style.css">
+<style>:root{
+    --primary:#6366f1;
+    --primary-dark:#4f46e5;
+    --bg:#f5f7ff;
+    --card:#ffffff;
+    --border:#e5e7eb;
+    --text:#374151;
+}
+
 *{
-    margin:0;
-    padding:0;
     box-sizing:border-box;
     font-family:'Poppins',sans-serif;
 }
 
-/* ===== Page ===== */
 body{
-    background:linear-gradient(135deg,#eef2ff,#f4f7fb);
-    color:#333;
-    padding:40px;
+    background:linear-gradient(135deg,#eef2ff,#f8fafc);
+    padding:24px;
+    color:var(--text);
 }
 
-/* ===== Form Card ===== */
-form{
-    max-width:800px;
+/* ===== Card ===== */
+.wrapper{
+    max-width:900px;
     margin:auto;
-    background:#fff;
-    padding:32px;
-    border-radius:16px;
-    box-shadow:0 10px 30px rgba(0,0,0,.1);
-    animation:fadeUp .6s ease;
+    background:var(--card);
+    padding:40px;
+    border-radius:22px;
+    box-shadow:0 30px 60px rgba(0,0,0,.08);
+    animation:cardIn .6s ease;
+}
+.close-btn{
+  position: relative;
+  top:-15px;
+  right:-98%;
+  width:36px;
+  height:36px;
+}
+@keyframes cardIn{
+    from{opacity:0; transform:translateY(30px)}
+    to{opacity:1; transform:translateY(0)}
 }
 
 /* ===== Heading ===== */
 h2{
+    text-align:center;
+    font-size:26px;
+    margin-bottom:30px;
+    color:var(--primary-dark);
+}
+
+/* ===== Alerts ===== */
+.success,.error{
+    padding:14px 16px;
+    border-radius:14px;
     margin-bottom:20px;
-    color:#6366f1;
-    font-weight:600;
-    animation:slideDown .6s ease;
-    margin-left:24%
+    font-weight:500;
+    animation:fadeUp .4s ease;
+}
+
+.success{background:#dcfce7;color:#166534}
+.error{background:#fee2e2;color:#991b1b}
+
+@keyframes fadeUp{
+    from{opacity:0; transform:translateY(10px)}
+    to{opacity:1; transform:translateY(0)}
+}
+
+/* ===== Grid ===== */
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:22px;
+}
+
+.full{
+    grid-column:1 / -1;
+}
+
+/* ===== Labels ===== */
+label{
+    font-size:14px;
+    font-weight:500;
+    margin-bottom:6px;
+    display:block;
 }
 
 /* ===== Inputs ===== */
-input,
-textarea,
-select{
+input, textarea, select{
     width:100%;
-    padding:12px 14px;
-    margin:8px 0;
-    border-radius:10px;
-    border:1px solid #d1d5db;
+    padding:14px 16px;
+    border-radius:14px;
+    border:1px solid var(--border);
     background:#f9fafb;
-    transition:.3s ease;
+    font-size:14px;
+    transition:all .3s ease;
 }
 
-/* ===== Focus Effect ===== */
-input:focus,
-textarea:focus,
-select:focus{
-    outline:none;
+/* Hover */
+input:hover, textarea:hover, select:hover{
     background:#fff;
-    border-color:#6366f1;
-    box-shadow:0 0 0 3px rgba(99,102,241,.2);
-    transform:scale(1.01);
+    border-color:var(--primary);
+}
+
+/* Focus */
+input:focus, textarea:focus, select:focus{
+    outline:none;
+    border-color:var(--primary);
+    box-shadow:0 0 0 4px rgba(99,102,241,.15);
+    transform:translateY(-1px);
+}
+
+/* File input */
+input[type=file]{
+    padding:12px;
 }
 
 /* ===== Button ===== */
 button{
-    padding:15px 25px;
-    background:linear-gradient(135deg,#6366f1,#4f46e5);
-    color:#fff;
+    margin-top:30px;
+    width:100%;
+    padding:16px;
     border:none;
-    border-radius:12px;
-    cursor:pointer;
-    margin-top:15px;
-    font-size:15px;
+    border-radius:16px;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;
+    font-size:16px;
     font-weight:500;
-    transition:.3s ease;
+    cursor:pointer;
+    transition:all .35s ease;
 }
 
+/* Button hover */
 button:hover{
-    transform:translateY(-2px);
-    box-shadow:0 8px 20px rgba(99,102,241,.4);
+    transform:translateY(-3px);
+    box-shadow:0 18px 30px rgba(99,102,241,.4);
 }
 
-/* ===== Success / Error ===== */
-.success{
-    background:#dcfce7;
-    color:#166534;
-    padding:10px 14px;
-    border-radius:8px;
-    margin-bottom:12px;
-    animation:fadeUp .4s ease;
+/* Button active */
+button:active{
+    transform:scale(.98);
 }
 
-.error{
-    background:#fee2e2;
-    color:#991b1b;
-    padding:10px 14px;
-    border-radius:8px;
-    margin-bottom:12px;
-    animation:fadeUp .4s ease;
-}
-
-/* ===== Animations ===== */
-@keyframes fadeUp{
-    from{
-        opacity:0;
-        transform:translateY(20px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-}
-
-@keyframes slideDown{
-    from{
-        opacity:0;
-        transform:translateY(-15px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
+/* ===== Highlights spacing ===== */
+.highlight-group input{
+    margin-bottom:10px;
 }
 
 /* ===== Mobile ===== */
 @media(max-width:768px){
     body{
-        padding:20px;
+        padding:14px;
     }
-    form{
-        padding:25px 20px;
+
+    .wrapper{
+        padding:26px 20px;
+        border-radius:18px;
+    }
+
+    h2{
+        font-size:22px;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+        gap:18px;
+    }
+
+    button{
+        font-size:15px;
+        padding:14px;
     }
 }
+
 </style>
 
 </head>
 <body>
-
+<div class="wrapper">
+       <a href="../index.php" class="close-btn">
+  <i class="fa-solid fa-xmark"></i>
+</a>
 <h2>Submit New Event</h2>
 
 <?php if($success) echo "<div class='success'>$success</div>"; ?>
 <?php if($error) echo "<div class='error'>$error</div>"; ?>
 
 <form method="POST" enctype="multipart/form-data">
-    <label>Event Title *</label>
-    <input type="text" name="title" required>
 
-    <label>Short Description *</label>
-    <input type="text" name="short_description" maxlength="255" required>
+<div class="form-grid">
 
-    <label>Event Description *</label>
-    <textarea name="description" rows="5" required></textarea>
+<div class="full">
+<label>Event Title *</label>
+<input type="text" name="title" required minlength="5" maxlength="150" required>
+</div>
 
-    <label>Event Date *</label>
-    <input type="date" name="event_date" required>
+<div class="full">
+<label>Description *</label>
+<textarea name="description" required minlength="20" required></textarea>
+</div>
 
-    <label>Event Time *</label>
-    <input type="time" name="event_time" required>
+<div>
+<label>Date *</label>
+<input type="date" name="event_date" required min="<?= date('Y-m-d'); ?>" required>
+</div>
 
-    <label>Location *</label>
-    <input type="text" name="location" required>
+<div>
+<label>Time *</label>
 
-    <label>Price (₹)</label>
-    <input type="number" name="price">
+<input type="time" name="event_time" required>
+</div>
 
-    <label>Main Event Image</label>
-    <input type="file" name="image" accept="image/*">
-     <!-- Event Category -->
-    <select name="category" required>
-        <option value="">Select Category</option>
-        <option value="Music">Music</option>
-        <option value="Technology">Technology</option>
-        <option value="Sports">Sports</option>
-        <option value="Education">Education</option>
-        <option value="Business">Business</option>
-        <option value="Other">Other</option>
-    </select>
-    <label>Highlight 1</label>
-    <input type="text" name="highlight1">
-    <label>Highlight 2</label>
-    <input type="text" name="highlight2">
-    <label>Highlight 3</label>
-    <input type="text" name="highlight3">
-    <label>Highlight 4</label>
-    <input type="text" name="highlight4">
+<div class="full">
+<label>Location *</label>
+<input type="text" name="location" required minlength="3" required>
+</div>
 
-    <button type="submit" name="submit">Submit Event</button>
+<div>
+<label>Category *</label>
+<select name="category" required>
+  <option value="">Select</option>
+  <option value="Music">Music</option>
+  <option value="Technology">Technology</option>
+  <option value="Sports">Sports</option>
+  <option value="Education">Education</option>
+  <option value="Business">Business</option>
+</select>
+</div>
+
+<div>
+<label>Price (₹)</label>
+<input type="number" name="price" value="0">
+</div>
+
+<div class="full">
+<label>Main Image</label>
+<input type="file" name="image" required>
+</div>
+<div class="full highlight-group">
+    <label>Event Highlights</label>
+    <input type="text" name="highlight1" placeholder="Highlight 1">
+    <input type="text" name="highlight2" placeholder="Highlight 2">
+    <input type="text" name="highlight3" placeholder="Highlight 3">
+    <input type="text" name="highlight4" placeholder="Highlight 4">
+</div>
+
+</div>
+
+<button name="submit">Submit Event</button>
 </form>
+</div>
+
 
 </body>
 </html>

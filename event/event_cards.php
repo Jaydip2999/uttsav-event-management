@@ -40,10 +40,11 @@ $result = mysqli_query($conn,"SELECT * FROM events WHERE status='approved'");
 
 <div class="events-wrapper" id="eventList">
 <?php while($row=mysqli_fetch_assoc($result)){ ?>
-  <div class="event-card" data-cat="<?= $row['category'] ?>">
-    <div class="event-img">
-      <img src="uploads/<?= $row['image'] ?>">
-    </div>
+  <div class="event-card" data-cat="<?= $row['category'] ?>" >
+  <div class="event-img">
+    <img src="../assets/images/events/<?php echo $row['image']; ?>">
+</div>
+
     <div class="event-body">
       <h3><?= htmlspecialchars($row['title']) ?></h3>
       <p><?= htmlspecialchars($row['description']) ?></p>
@@ -53,7 +54,7 @@ $result = mysqli_query($conn,"SELECT * FROM events WHERE status='approved'");
         <span><i data-lucide="calendar-days"></i><?= date("d M Y",strtotime($row['event_date'])) ?></span>
       </div>
 
-      <a href="event_details.php?id=<?= $row['id'] ?>">
+      <a href="/php/event-management-system/event/event_full_details.php?id=<?= $row['id'] ?>">
         <button class="event-btn">View Details</button>
       </a>
     </div>
@@ -62,10 +63,6 @@ $result = mysqli_query($conn,"SELECT * FROM events WHERE status='approved'");
 </div>
 
 </section>
-
-<?php
-// include"../includes/header.php";  
-?>
 
 <?php include"../includes/footer.php"; ?>
 <script src="../assets/script.js"></script>

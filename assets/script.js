@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
         lucide.createIcons();
     }
 
-    // 🔍 Search
+    //  Search
     const searchInput = document.getElementById("searchInput");
     if (searchInput) {
         searchInput.addEventListener("keyup", function () {
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 🏷 Category Filter
+    // Category Filter
     document.querySelectorAll(".category").forEach(cat => {
         cat.addEventListener("click", function () {
 

@@ -4,7 +4,7 @@
 
     <!-- Brand -->
     <div class="footer-box">
-      <img src="assets/images/logo.png" alt="" class="footer_logo">
+      <img src="/php/event-management-system/assets/images/logo.png" alt="" class="footer_logo">
       <h2 class="footer-logo">Shiv Event</h2>
       <p>
         Shiv Event is a modern event management system designed to plan,

@@ -1,38 +1,51 @@
+<?php
+require "includes/db.php"; // apna db connection
+
+$today = date("Y-m-d");
+
+/* 
+  Closest upcoming events
+  aaj ke baad ke
+  sirf 4 events
+*/
+$query = "
+    SELECT * FROM events 
+    WHERE event_date >= '$today'
+    ORDER BY event_date ASC
+    LIMIT 4
+";
+
+$result = mysqli_query($conn, $query);
+?>
 
 <section class="event-slider">
-  <div class="slide active">
-    <img src="assets/images/luxury_wedding.jpg" alt="Wedding">
+
+<?php
+$active = "active"; 
+
+if(mysqli_num_rows($result) > 0):
+while($row = mysqli_fetch_assoc($result)):
+?>
+
+  <div class="slide <?= $active ?>">
+    <img src="\php\Event-management-system\assets\images\events\<?= $row['image']; ?>" alt="<?= $row['title']; ?>">
+
     <div class="slide-content">
-      <h2>Luxury Wedding</h2>
-      <p>Elegant decor, premium catering & unforgettable moments.</p>
-      <a href="event/event_full_details.php" class="slide-btn">Explore Event</a>
+      <h2><?= htmlspecialchars($row['title']); ?></h2>
+      <p><?= htmlspecialchars($row['description']); ?></p>
+
+      <a href="event/event_full_details.php?id=<?= $row['id']; ?>" class="slide-btn">
+        Explore Event
+      </a>
     </div>
   </div>
 
-  <div class="slide">
-    <img src="assets/images/corporate_meeting.png" alt="Corporate">
-    <div class="slide-content">
-      <h2>Corporate Meetup</h2>
-      <p>Professional events with seamless planning & execution.</p>
-      <a href="event_full_details.php" class="slide-btn">View Details</a>
-    </div>
-  </div>
+<?php
+$active = ""; // only first slide active
+endwhile;
+else:
+?>
+  <p style="text-align:center;">No upcoming events found</p>
+<?php endif; ?>
 
-  <div class="slide">
-    <img src="assets\images\birthday_party.jpg" alt="Birthday">
-    <div class="slide-content">
-      <h2>Birthday Party</h2>
-      <p>Fun themes, live music & joyful celebrations.</p>
-      <a href="event_full_details.php" class="slide-btn">Book Now</a>
-    </div>
-  </div>
-
-  <div class="slide">
-    <img src="assets/images/concert.png" alt="Concert">
-    <div class="slide-content">
-      <h2>Live Concert</h2>
-      <p>High-energy shows with world-class sound & lighting.</p>
-      <a href="event_full_details.php" class="slide-btn">Get Tickets</a>
-    </div>
-  </div>
 </section>

@@ -93,6 +93,43 @@ session_start();
     </div>
   </div>
 </section>
+<section class="contact-section" id="contact">
+  <div class="contact-container">
+
+    <div class="contact-info">
+      <h2>Contact Us</h2>
+      <p>Have questions about events or need help?  
+         Feel free to reach out to us anytime.</p>
+
+      <div class="info-box">
+        <i class="fas fa-map-marker-alt"></i>
+        <span>Ahmedabad, Gujarat, India</span>
+      </div>
+
+      <div class="info-box">
+        <i class="fas fa-envelope"></i>
+        <span>support@eventify.com</span>
+      </div>
+
+      <div class="info-box">
+        <i class="fas fa-phone"></i>
+        <span>+91 98765 43210</span>
+      </div>
+    </div>
+
+    <form class="contact-form" method="post" action="contact.php">
+      <h3>Send Message</h3>
+
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="email" name="email" placeholder="Your Email" required>
+      <input type="text" name="subject" placeholder="Subject">
+      <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+
+      <button type="submit">Send Message</button>
+    </form>
+
+  </div>
+</section>
 
 
 <?php include "includes/footer.php"; ?>

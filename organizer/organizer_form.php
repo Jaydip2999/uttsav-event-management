@@ -37,35 +37,26 @@ if(isset($_POST['submit'])){
         $error_msg = "You have already applied for organizer.";
     }
 
-    /* ================= ID PROOF ================= */
-    if($error_msg == ""){
-        if(!empty($_FILES['id_proof']['name'])){
-            if(!is_dir('uploads/id_proofs')){
-                mkdir('uploads/id_proofs',0777,true);
-            }
-            $id_path = 'uploads/id_proofs/'.time().'_'.$_FILES['id_proof']['name'];
-            move_uploaded_file($_FILES['id_proof']['tmp_name'],$id_path);
-        } else {
-            $error_msg = "Please upload ID Proof.";
-        }
-    }
+  $profile_path = "";
+if(!empty($_FILES['profile_pic']['name'])){
+    $uploadDir = __DIR__ . "/uploads/profile_pics/"; 
 
-    /* ================= PROFILE PIC ================= */
-    $profile_path = "";
-    if($error_msg == "" && !empty($_FILES['profile_pic']['name'])){
-        if(!is_dir('uploads/profile_pics')){
-            mkdir('uploads/profile_pics',0777,true);
-        }
-        $profile_path = 'uploads/profile_pics/'.time().'_'.$_FILES['profile_pic']['name'];
-        move_uploaded_file($_FILES['profile_pic']['tmp_name'],$profile_path);
-    }
+    if(!is_dir($uploadDir)) mkdir($uploadDir,0777,true);
+
+    $profile_path = time().'_'.basename($_FILES['profile_pic']['name']);
+    move_uploaded_file($_FILES['profile_pic']['tmp_name'], $uploadDir.$profile_path);
+}
+
+// INSERT into DB
+$sql = "INSERT INTO organizers (user_id, full_name, mobile, email, profile_pic, company_name, gst_number, website, address, status)
+        VALUES ($user_id,'$full_name','$mobile','$email','$profile_path','$company_name','$gst_number','$website','$address','pending')";
 
     /* ================= INSERT ================= */
     if($error_msg == ""){
         $sql = "INSERT INTO organizers
-        (user_id, full_name, mobile, email, id_proof, address, profile_pic, company_name, gst_number, website, status)
+        (user_id, full_name, mobile, email, profile_pic,company_name ,gst_number,website,address,status)
         VALUES
-        ($user_id,'$full_name','$mobile','$email','$id_path','$address','$profile_path','$company_name','$gst_number','$website','pending')";
+        ($user_id,'$full_name','$mobile','$email','$profile_path','$company_name','$gst_number','$website','$address','pending')";
 
         if(mysqli_query($conn,$sql)){
             $success_msg = "Registration submitted successfully. Admin approval pending.";
@@ -100,7 +91,13 @@ body{
   align-items:center;
   min-height:100vh;
 }
-
+.close-btn{
+  position: relative;
+  top:-15px;
+  right:-98%;
+  width:36px;
+  height:36px;
+}
 .form-container{
     background: #fff;
     padding: 40px 35px;
@@ -250,6 +247,10 @@ a:hover{
 <body>
 
 <div class="form-container">
+    <a href="../index.php" class="close-btn">
+  <i class="fa-solid fa-xmark"></i>
+</a>
+
     <h2><i class="fa-solid fa-user-plus"></i> Organizer Registration</h2>
     <!-- SUCCESS / ERROR MESSAGE -->
     <?php if($success_msg != ""): ?>
@@ -271,29 +272,25 @@ a:hover{
             <label><i class="fa-solid fa-envelope"></i> Email</label>
             <input type="email" name="email" placeholder="Enter email" required>
         </div>
-        <div class="form-group">
-            <label><i class="fa-solid fa-id-card"></i> ID Proof (PDF/JPG/PNG)</label>
-            <input type="file" name="id_proof" accept=".jpg,.png,.pdf" required>
-        </div>
-        <div class="form-group">
-            <label><i class="fa-solid fa-location-dot"></i> Address</label>
-            <textarea name="address" rows="2" placeholder="Enter address"></textarea>
-        </div>
-        <div class="form-group">
+         <div class="form-group">
             <label><i class="fa-solid fa-image"></i> Profile Picture</label>
-            <input type="file" name="profile_pic" accept=".jpg,.png">
+            <input type="file" name="profile_pic" accept=".jpg,.png" required>
         </div>
-        <div class="form-group">
+          <div class="form-group">
             <label><i class="fa-solid fa-building"></i> Company / Group Name</label>
-            <input type="text" name="company_name" placeholder="Enter company/group name">
+            <input type="text" name="company_name" placeholder="Enter company/group name" >
         </div>
-        <div class="form-group">
+         <div class="form-group">
             <label><i class="fa-solid fa-file-invoice-dollar"></i> GST Number</label>
             <input type="text" name="gst_number" placeholder="Enter GST number">
         </div>
         <div class="form-group">
             <label><i class="fa-solid fa-globe"></i> Website / Social Link</label>
             <input type="url" name="website" placeholder="Enter website or social link">
+        </div>
+        <div class="form-group">
+            <label><i class="fa-solid fa-location-dot"></i> Address</label>
+            <textarea name="address" rows="2" placeholder="Enter address" required></textarea>
         </div>
         <div class="form-group checkbox-group">
             <input type="checkbox" name="terms" required>

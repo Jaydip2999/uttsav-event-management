@@ -37,7 +37,7 @@ ORDER BY o.created_at DESC
 <td><?=htmlspecialchars($r['full_name'])?></td>
 <td><?=htmlspecialchars($r['email'])?></td>
 <td><?=htmlspecialchars($r['company_name'])?></td>
-<td><a href="../<?=htmlspecialchars($r['id_proof'])?>" target="_blank">View</a></td>
+<td><a href="../organizer/<?=htmlspecialchars($r['profile_pic'])?>" target="_blank">View</a></td>
 <td>
 <a class="btn approve"
 href="approve_organizer.php?id=<?=$r['id']?>&uid=<?=$r['user_id']?>"
@@ -46,6 +46,7 @@ onclick="return confirm('Approve this organizer?')">Approve</a>
 <a class="btn reject"
 href="reject_organizer.php?id=<?=$r['id']?>"
 onclick="return confirm('Reject this organizer?')">Reject</a>
+
 </td>
 </tr>
 <?php } } else { ?>

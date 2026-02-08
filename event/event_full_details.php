@@ -1,324 +1,338 @@
 <?php
 session_start();
-
-if(!isset($_SESSION['user_id'])){
-    header("Location: ../auth/login.php");
-    exit;
-}
-
 require "../includes/db.php";
 
-$event_id = $_GET['id'] ?? '';
+$event_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($event_id <= 0) die("Invalid Event ID");
 
-if($event_id == '17'){
-    echo "Invalid Event ID";
-    exit;
-}
-
-$event_id = mysqli_real_escape_string($conn, $event_id);
-
-$sql = "SELECT * FROM events WHERE id='$event_id'";
+/* FETCH EVENT + ORGANIZER */
+$sql = "
+SELECT 
+    e.*,
+    o.full_name AS organizer_name,
+    o.email AS organizer_email,
+    o.mobile AS organizer_mobile,
+    o.profile_pic AS organizer_image,
+    o.company_name AS organizer_company,
+    o.status AS organizer_status
+FROM events e
+LEFT JOIN organizers o ON o.id = e.organizer_id
+WHERE e.id = $event_id
+";
 $result = mysqli_query($conn, $sql);
+if (mysqli_num_rows($result) == 0) die("Event not found");
+$event = mysqli_fetch_assoc($result);
 
-if(mysqli_num_rows($result) == 0){
-    echo "Event not found";
-    exit;
+/* ORGANIZER IMAGE */
+$orgImage = "../assets/images/default-user.png"; 
+
+if(!empty($event['organizer_image'])){
+    $possiblePath = __DIR__ . "/../organizer/uploads/profile_pics/" . $event['organizer_image'];
+    if(file_exists($possiblePath)){
+        $orgImage = "../organizer/uploads/profile_pics/" . $event['organizer_image'];
+    }
 }
 
-$event = mysqli_fetch_assoc($result);
+
+/* EVENT IMAGE */
+$eventImage = "../assets/images/default-event.jpg";
+if (!empty($event['image']) && file_exists(__DIR__."/../assets/images/events/".$event['image'])) {
+    $eventImage = "../assets/images/events/".$event['image'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Event Full Details</title>
+<title><?= htmlspecialchars($event['title']); ?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+ <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/style.css">
 <style>
+/* ===== RESET ===== *//* ===== GLOBAL ===== */
 *{
   margin:0;
   padding:0;
   box-sizing:border-box;
   font-family:'Poppins',sans-serif;
 }
+
+html, body{
+  width:100%;
+  overflow-x:hidden;
+  background: #020617;
+}
+
 body{
-  background:#020617;
+  margin:0;
+  background: radial-gradient(circle at top,#0f2f36 0%,#020617 55%);
+  font-family:'Poppins',sans-serif;
   color:#e5e7eb;
+  padding-top:10vh;
 }
 
 /* ===== HERO ===== */
 .hero{
   height:75vh;
-  background:url('assets/images/concert.png') center/cover no-repeat;
+  background:url('<?= $eventImage ?>') center/cover no-repeat;
   position:relative;
   display:flex;
   align-items:flex-end;
 }
-.hero::after{
-  content:'';
+
+.hero-overlay{
   position:absolute;
   inset:0;
-  background:linear-gradient(to top,#020617 20%,transparent);
-}
-.hero-content{
-  position:relative;
-  padding:40px 8%;
-}
-.hero-content h1{
-  font-size:46px;
-  margin-bottom:10px;
-}
-.hero-meta span{
-  margin-right:15px;
-  font-size:15px;
-  color:#c7d2fe;
+  background:linear-gradient(
+    to top,
+    rgba(2,6,23,.95) 20%,
+    rgba(2,6,23,.45)
+  );
 }
 
-/* ===== MAIN LAYOUT ===== */
+.hero-content{
+  position:relative;
+  padding:0 8% 50px;
+  animation:fadeUp .8s ease;
+}
+
+.hero h1{
+  font-size:38px;
+  font-weight:600;
+  color:#f8fafc;
+}
+
+.hero-meta span{
+  margin-right:18px;
+  font-size:14px;
+  color:#94a3b8;
+}
+
+/* ===== LAYOUT ===== */
 .wrapper{
   padding:60px 8%;
   display:grid;
-  grid-template-columns:2.7fr 1.3fr;
+  grid-template-columns:2.6fr 1.4fr;
   gap:40px;
 }
 
 /* ===== CARD ===== */
 .card{
-  background:rgba(255,255,255,.06);
-  border-radius:20px;
+  background:linear-gradient(145deg, rgba(42, 51, 53,0.15),rgba(23, 45, 53, 0.5));
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;
   padding:28px;
   margin-bottom:35px;
+ box-shadow:0 25px 55px rgba(0,0,0,.45);
+ backdrop-filter:blur(12px);
 }
 
-/* ===== TITLES ===== */
+
 .section-title{
-  font-size:26px;
-  margin-bottom:15px;
-  color:#a5b4fc;
+  font-size:22px;
+  color: rgb(128, 231, 252);
+  margin-bottom:16px;
 }
 
-/* ===== TEXT ===== */
 .card p{
   line-height:1.9;
-  font-size:15px;
-  color:#d1d5db;
+  color:#cbd5e1;
 }
 
 /* ===== HIGHLIGHTS ===== */
 .highlights{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:15px;
+  gap:14px;
 }
+
 .highlight{
-  background:rgba(255,255,255,.08);
-  padding:15px;
-  border-radius:14px;
-}
-.highlight i{
-  color:#6366f1;
-  margin-right:8px;
-}
-
-/* ===== GALLERY ===== */
-.gallery{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:15px;
-}
-.gallery img{
-  width:100%;
-  height:180px;
-  object-fit:cover;
-  border-radius:14px;
-}
-
-/* ===== SCHEDULE ===== */
-.schedule li{
-  list-style:none;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.06);
   padding:14px;
-  background:rgba(255,255,255,.07);
   border-radius:14px;
-  margin-bottom:12px;
-}
-.schedule span{
-  color:#818cf8;
-  font-weight:600;
+  font-size:14px;
+  color:#e5e7eb;
 }
 
-/* ===== RULES ===== */
-.rules li{
-  margin-bottom:10px;
-  list-style:none;
+.highlight i{
+  color:#cbd5e1;;
 }
-.rules li::before{
-  content:"✔ ";
-  color:#22c55e;
-}
+
 
 /* ===== ORGANIZER ===== */
-.organizer{
+.organizer.compact{
   display:flex;
-  gap:15px;
+  gap:14px;
   align-items:center;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.06);
+  padding:16px;
+  border-radius:16px;
 }
+
 .organizer img{
-  width:70px;
-  height:70px;
+  width:62px;
+  height:62px;
   border-radius:50%;
+  object-fit:cover;
+  border:2px solid #22d3ee;
+}
+
+.company{
+  font-size:13px;
+  color:#94a3b8;
+  margin:2px 0;
+}
+
+.badge.approved{
+  background:rgba(34,211,238,.15);
+  color:#22d3ee;
+  font-size:11px;
+  padding:4px 12px;
+  border-radius:20px;
 }
 
 /* ===== SIDEBAR ===== */
 .sidebar{
   position:sticky;
-  top:100px;
+  top:90px;
 }
+
 .info-row{
   display:flex;
   justify-content:space-between;
-  margin-bottom:15px;
+  font-size:14px;
+  margin-bottom:14px;
+  color:#cbd5e1;
 }
+
+/* ===== PRICE ===== */
 .price{
-  font-size:34px;
-  color:#22c55e;
+  font-size:40px;
+  font-weight:700;
   text-align:center;
+  margin:26px 0;
+  background:linear-gradient(135deg,#22d3ee,#06b6d4);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
+
+/* ===== BUTTON ===== */
 .book-btn{
   width:100%;
   padding:15px;
   border:none;
-  border-radius:14px;
-  background:#6366f1;
-  color:#fff;
+   background:linear-gradient(90deg,#00e6e6,#00b3b3);
+  color:#020617;
+  border-radius:16px;
   font-size:16px;
+  font-weight:600;
   cursor:pointer;
+  transition:.35s ease;
 }
-.book-btn:hover{opacity:.9}
 
-/* ===== RESPONSIVE ===== */
-@media(max-width:900px){
+.book-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 30px rgba(34,211,238,.55);
+}
+
+/* ===== ANIMATION ===== */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(25px)}
+  to{opacity:1;transform:none}
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
   .wrapper{
     grid-template-columns:1fr;
+    padding:35px 6%;
   }
-  .hero-content h1{font-size:34px}
+  .hero h1{
+    font-size:26px;
+  }
+  .highlights{
+    grid-template-columns:1fr;
+  }
+  .card{
+    font-size:11px;
+  }
+  body{
+    margin-top:-10%;
+  }
 }
+
 </style>
 </head>
 
 <body>
-<!-- ===== HERO ===== -->
-<section class="hero" style="background:url('uploads/<?php echo $event['image']; ?>') center/cover no-repeat;">
+<?php include "../includes/header.php"; ?>
+
+<section class="hero">
+  <div class="hero-overlay"></div>
   <div class="hero-content">
-    <h1><?php echo htmlspecialchars($event['title']); ?></h1>
+    <h1><?= htmlspecialchars($event['title']); ?></h1>
     <div class="hero-meta">
-      <span>
-        <i class="fa fa-calendar"></i>
-        <?php echo date("d M Y", strtotime($event['event_date'])); ?>
-      </span>
-      <span>
-        <i class="fa fa-location-dot"></i>
-        <?php echo htmlspecialchars($event['location']); ?>
-      </span>
+      <span><i class="fa fa-calendar"></i> <?= date("d M Y",strtotime($event['event_date'])); ?></span>
+      <span><i class="fa fa-location-dot"></i> <?= htmlspecialchars($event['location']); ?></span>
     </div>
   </div>
 </section>
 
-<!-- ===== CONTENT ===== -->
 <section class="wrapper">
-
-<!-- LEFT SIDE -->
 <div>
 
-  <!-- ABOUT -->
-  <div class="card">
-    <h3 class="section-title">About This Event</h3>
-    <p><?php echo nl2br(htmlspecialchars($event['description'])); ?></p>
+<div class="card">
+  <h3 class="section-title">About This Event</h3>
+  <p><?= nl2br(htmlspecialchars($event['description'])); ?></p>
+</div>
+
+<div class="card">
+  <h3 class="section-title">Why You Should Attend</h3>
+  <div class="highlights">
+  <?php for($i=1;$i<=4;$i++){
+    if(!empty($event["highlight$i"])){
+      echo "<div class='highlight'><i class='fa fa-star'></i> ".htmlspecialchars($event["highlight$i"])."</div>";
+    }} ?>
   </div>
+</div>
 
-  <!-- HIGHLIGHTS -->
-  <div class="card">
-    <h3 class="section-title">Why You Should Attend</h3>
-    <div class="highlights">
-
-      <?php if(!empty($event['highlight1'])){ ?>
-        <div class="highlight"><i class="fa fa-star"></i> <?php echo $event['highlight1']; ?></div>
+<div class="card">
+  <h3 class="section-title">Organizer Details</h3>
+  <div class="organizer compact">
+    <img src="<?= $orgImage; ?>" alt="Organizer">
+    <div>
+      <strong><?= htmlspecialchars($event['organizer_name']); ?></strong>
+      <?php if($event['organizer_status']=='approved'){ ?>
+        <span class="badge approved">✔ Verified</span>
       <?php } ?>
-
-      <?php if(!empty($event['highlight2'])){ ?>
-        <div class="highlight"><i class="fa fa-star"></i> <?php echo $event['highlight2']; ?></div>
-      <?php } ?>
-
-      <?php if(!empty($event['highlight3'])){ ?>
-        <div class="highlight"><i class="fa fa-star"></i> <?php echo $event['highlight3']; ?></div>
-      <?php } ?>
-
-      <?php if(!empty($event['highlight4'])){ ?>
-        <div class="highlight"><i class="fa fa-star"></i> <?php echo $event['highlight4']; ?></div>
-      <?php } ?>
-
+      <p class="company"><?= htmlspecialchars($event['organizer_company']); ?></p>
+      <p class="email"><?= htmlspecialchars($event['organizer_email']); ?>
+      <span class="company"><?= htmlspecialchars($event['organizer_mobile']); ?></span>
+    </p>
     </div>
   </div>
-
-  <!-- GALLERY (STATIC FOR NOW) -->
-  <div class="card">
-    <h3 class="section-title">Event Gallery</h3>
-    <div class="gallery">
-      <img src="assets/images/g1.jpg">
-      <img src="assets/images/g2.jpg">
-      <img src="assets/images/g3.jpg">
-    </div>
-  </div>
-
-  <!-- ORGANIZER -->
-  <div class="card">
-    <h3 class="section-title">Organizer Details</h3>
-    <div class="organizer">
-      <img src="https://i.pravatar.cc/150">
-      <div>
-        <strong>Event Organizer</strong>
-        <p>Professional event management team</p>
-      </div>
-    </div>
-  </div>
+</div>
 
 </div>
 
-<!-- RIGHT SIDEBAR -->
 <div class="sidebar">
-  <div class="card">
-    <h3 class="section-title">Event Info</h3>
+<div class="card">
+  <h3 class="section-title">Event Info</h3>
+  <div class="info-row"><span>Date</span><span><?= date("d M Y",strtotime($event['event_date'])); ?></span></div>
+  <div class="info-row"><span>Time</span><span><?= $event['event_time']; ?></span></div>
+  <div class="info-row"><span>Category</span><span><?= $event['category']; ?></span></div>
 
-    <div class="info-row">
-      <span>Date</span>
-      <span><?php echo date("d M Y", strtotime($event['event_date'])); ?></span>
-    </div>
-
-    <div class="info-row">
-      <span>Time</span>
-      <span><?php echo date("h:i A", strtotime($event['event_time'])); ?></span>
-    </div>
-
-    <div class="info-row">
-      <span>Location</span>
-      <span><?php echo htmlspecialchars($event['location']); ?></span>
-    </div>
-
-    <div class="info-row">
-      <span>Category</span>
-      <span><?php echo htmlspecialchars($event['category']); ?></span>
-    </div>
-
-    <div class="price">
-      ₹<?php echo ($event['price'] > 0) ? $event['price'] : 'Free'; ?>
-    </div>
-
-    <button class="book-btn">Book Your Seat</button>
-  </div>
+  <div class="price">₹<?= $event['price']>0?$event['price']:'Free'; ?></div>
+  <button class="book-btn">Book Your Seat</button>
 </div>
-
+</div>
 </section>
 
+<?php include "../includes/footer.php"; ?>
+<script src="../assets/script.js"></script>
 </body>
 </html>
