@@ -9,7 +9,7 @@
     
         <nav class="nav-links" id="navLinks">
             <a href="\php\Event-management-system\index.php">Home</a>
-           <a href="\php\Event-management-system\index.php#about">About</a>
+            <a href="\php\Event-management-system\index.php#about">About</a>
             <a href="\php\Event-management-system\event\event_cards.php">Events</a>
             <a href="\php\Event-management-system\index.php#services">Services</a>
             <a href="\php\Event-management-system\index.php#contact">Contact</a>
@@ -27,8 +27,8 @@
         <?php if($_SESSION['role'] === 'admin'): ?>
             <a href="\php\Event-management-system\admin/admin_dashboard.php">Admin Dashboard</a>
 
-        <?php else: ?>
-            <a href="/php/Event-management-system/user_profile.php">
+        <?php else : ?>
+            <a href="/php/event-management-system/user_profile.php">
                 <i class="fa-regular fa-user"></i>
                 <?php echo $_SESSION['user_name'];?>
             </a>
@@ -54,7 +54,6 @@
         <a href="/php/Event-management-system/auth/login.php">Log In</a>
 
     <?php endif; ?>
-
 
     </div>
 

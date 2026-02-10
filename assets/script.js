@@ -53,46 +53,59 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
 // ===================event cards search and category ============
+const categories = document.querySelectorAll(".category");
+const cards = document.querySelectorAll(".event-card");
 
-document.addEventListener("DOMContentLoaded", function () {
+categories.forEach(cat => {
+  cat.addEventListener("click", () => {
 
-    // lucide icons
-    if (window.lucide) {
-        lucide.createIcons();
-    }
+    categories.forEach(c => c.classList.remove("active"));
+    cat.classList.add("active");
 
-    //  Search
-    const searchInput = document.getElementById("searchInput");
-    if (searchInput) {
-        searchInput.addEventListener("keyup", function () {
-            let v = this.value.toLowerCase();
-            document.querySelectorAll(".event-card").forEach(card => {
-                card.style.display = card.innerText.toLowerCase().includes(v) ? "" : "none";
-            });
-        });
-    }
+    const filter = cat.dataset.cat;
+    const today = new Date();
+    today.setHours(0,0,0,0);
 
-    // Category Filter
-    document.querySelectorAll(".category").forEach(cat => {
-        cat.addEventListener("click", function () {
+    cards.forEach(card => {
+      const cardCat = card.dataset.cat;
+      const eventDate = new Date(card.dataset.date);
+      eventDate.setHours(0,0,0,0);
 
-            // active class
-            document.querySelectorAll(".category").forEach(c => c.classList.remove("active"));
-            this.classList.add("active");
+      let show = true;
 
-            let selectedCat = this.dataset.cat.toLowerCase();
+      // NORMAL CATEGORY
+      if (!["all","today","week","month","past"].includes(filter)) {
+        show = cardCat === filter;
+      }
 
-            document.querySelectorAll(".event-card").forEach(card => {
-                let eventCat = card.dataset.cat.toLowerCase();
+      // TODAY
+      if (filter === "today") {
+        show = eventDate.getTime() === today.getTime();
+      }
 
-                if (selectedCat === "all" || eventCat === selectedCat) {
-                    card.style.display = "";
-                } else {
-                    card.style.display = "none";
-                }
-            });
-        });
+      // THIS WEEK
+      if (filter === "week") {
+        const diff = (eventDate - today) / (1000*60*60*24);
+        show = diff >= 0 && diff <= 7;
+      }
+
+      // THIS MONTH
+      if (filter === "month") {
+        show =
+          eventDate.getMonth() === today.getMonth() &&
+          eventDate.getFullYear() === today.getFullYear();
+      }
+
+      // 🔥 PAST EVENTS
+      if (filter === "past") {
+        show = eventDate < today;
+      }
+
+      card.style.display = show ? "block" : "none";
     });
 
+  });
 });
+

@@ -39,6 +39,39 @@ $eventImage = "../assets/images/default-event.jpg";
 if (!empty($event['image']) && file_exists(__DIR__."/../assets/images/events/".$event['image'])) {
     $eventImage = "../assets/images/events/".$event['image'];
 }
+
+
+/* ===== GUEST COUNT ===== */
+
+$maxGuests = isset($event['total_slots']) ? (int)$event['total_slots'] : 0;
+$bookedGuests = isset($event['booked_slots']) ? (int)$event['booked_slots'] : 0;
+
+$availableSlots = max(0, $maxGuests - $bookedGuests);
+
+$bookingQuery = mysqli_query(
+  $conn,
+  "SELECT COUNT(*) AS total FROM bookings WHERE event_id = $event_id"
+);
+
+if($bookingQuery){
+  $bookingData = mysqli_fetch_assoc($bookingQuery);
+  $bookedGuests = (int)$bookingData['total'];
+}
+
+$availableSlots = max(0, $maxGuests - $bookedGuests);
+
+/* ===== EVENT STATUS CHECK ===== */
+
+// Current datetime
+$currentDateTime = new DateTime("now");
+$eventDateTime = new DateTime($event['event_date'].' '.$event['event_time']);
+
+// Past event?
+$isPastEvent = $eventDateTime < $currentDateTime;
+
+// Booking closed condition
+$isBookingClosed = ($availableSlots <= 0 || $isPastEvent);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -325,9 +358,48 @@ body{
   <div class="info-row"><span>Date</span><span><?= date("d M Y",strtotime($event['event_date'])); ?></span></div>
   <div class="info-row"><span>Time</span><span><?= $event['event_time']; ?></span></div>
   <div class="info-row"><span>Category</span><span><?= $event['category']; ?></span></div>
+  <div class="info-row">
+  <span>Total Guests</span>
+  <span><?= $maxGuests; ?></span>
+</div>
+
+<div class="info-row">
+  <span>Booked</span>
+  <span><?= $bookedGuests; ?></span>
+</div>
+
+<div class="info-row">
+  <span>Available Slots</span>
+  <span>
+    <?php if($availableSlots > 0){ ?>
+      <?= $availableSlots; ?>
+    <?php }else{ ?>
+      <strong style="color:#ef4444">Full</strong>
+    <?php } ?>
+  </span>
+</div>
+  <div class="info-row">
+  <span>Status</span>
+  <span>
+    <?php if($isPastEvent){ ?>
+      <strong style="color:#ef4444">Event Closed</strong>
+    <?php } elseif($availableSlots <= 0){ ?>
+      <strong style="color:#f97316">Booking Full</strong>
+    <?php } else { ?>
+      <strong style="color:#22c55e">Open</strong>
+    <?php } ?>
+  </span>
+</div>
 
   <div class="price">₹<?= $event['price']>0?$event['price']:'Free'; ?></div>
-  <button class="book-btn">Book Your Seat</button>
+
+  <a href="book_event.php?event_id=<?= $event['id'] ?>">
+  <button class="book-btn"
+<?= ($isBookingClosed ? 'disabled style="opacity:.5;cursor:not-allowed"' : '') ?>>
+<?= $isPastEvent ? 'Event Closed' : ($availableSlots <= 0 ? 'Slots Full' : 'Book Your Seat') ?> <i class="fa fa-ticket"></i>
+</button>
+</a>
+
 </div>
 </div>
 </section>

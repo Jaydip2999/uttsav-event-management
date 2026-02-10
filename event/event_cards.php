@@ -28,6 +28,11 @@ session_start();
 
 <div class="categories">
   <div class="category active" data-cat="all">All</div>
+  <div class="category" data-cat="today">Today</div>
+  <div class="category" data-cat="week">This Week</div>
+  <div class="category" data-cat="month">This Month</div>
+  <div class="category" data-cat="past">Past Events</div>
+
   <div class="category" data-cat="wedding">Wedding</div>
   <div class="category" data-cat="corporate">Corporate</div>
   <div class="category" data-cat="birthday">Birthday</div>
@@ -40,25 +45,38 @@ $result = mysqli_query($conn,"SELECT * FROM events WHERE status='approved'");
 
 <div class="events-wrapper" id="eventList">
 <?php while($row=mysqli_fetch_assoc($result)){ ?>
-  <div class="event-card" data-cat="<?= $row['category'] ?>" >
+ <div class="event-card"
+     data-cat="<?= $row['category'] ?>"
+     data-date="<?= $row['event_date'] ?>">
+
   <div class="event-img">
-    <img src="../assets/images/events/<?php echo $row['image']; ?>">
+    <img src="../assets/images/events/<?= htmlspecialchars($row['image']) ?>" alt="Event Image">
+  </div>
+
+  <div class="event-body">
+    <h3><?= htmlspecialchars($row['title']) ?></h3>
+    <p><?= htmlspecialchars($row['description']) ?></p>
+
+    <div class="event-meta">
+      <span><i data-lucide="map-pin"></i><?= htmlspecialchars($row['location']) ?></span>
+      <span><i data-lucide="calendar-days"></i>
+        <?= date("d M Y", strtotime($row['event_date'])) ?>
+      </span>
+    </div>
+
+    <div class="slot-info">
+      <span class="total"><?= $row['total_slots'] ?></span>
+      <span class="available">/
+        <?= $row['total_slots'] - $row['booked_slots'] ?>
+      </span>
+    </div>
+
+    <a href="event_full_details.php?id=<?= $row['id'] ?>">
+      <button class="event-btn">View Details</button>
+    </a>
+  </div>
 </div>
 
-    <div class="event-body">
-      <h3><?= htmlspecialchars($row['title']) ?></h3>
-      <p><?= htmlspecialchars($row['description']) ?></p>
-
-      <div class="event-meta">
-        <span><i data-lucide="map-pin"></i><?= htmlspecialchars($row['location']) ?></span>
-        <span><i data-lucide="calendar-days"></i><?= date("d M Y",strtotime($row['event_date'])) ?></span>
-      </div>
-
-      <a href="/php/event-management-system/event/event_full_details.php?id=<?= $row['id'] ?>">
-        <button class="event-btn">View Details</button>
-      </a>
-    </div>
-  </div>
 <?php } ?>
 </div>
 

@@ -85,94 +85,115 @@ $sql = "INSERT INTO organizers (user_id, full_name, mobile, email, profile_pic, 
 }
 
 body{
-  background: linear-gradient(135deg,#e6ecf3,#f8fafc);
+  background: #0f2027; /* Dark background */
   display:flex;
   justify-content:center;
   align-items:center;
   min-height:100vh;
 }
+
 .close-btn{
   position: relative;
   top:-15px;
   right:-98%;
   width:36px;
   height:36px;
+  color:#fff;
 }
+
 .form-container{
-    background: #fff;
+    background: #1f2a33; /* Dark card */
     padding: 40px 35px;
     border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     width: 100%;
     max-width: 550px;
     transition: all 0.3s ease;
     margin:30px 0px;
 }
+
 .form-container:hover{
     transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.7);
 }
+
 .form-container h2{
     text-align:center;
     margin-bottom:25px;
     font-size:2rem;
-    color:#333;
+    color:#00e6e6; /* Cyan heading */
     position: relative;
 }
+
 .alert {
     padding: 10px 15px;
     margin-bottom: 15px;
     border-radius: 5px;
     font-weight: bold;
 }
+
 .alert.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background-color: rgba(0,230,230,0.2);
+    color: #00e6e6;
+    border: 1px solid #00b3b3;
 }
+
 .alert.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background-color: rgba(255,0,0,0.2);
+    color: #ff4d4d;
+    border: 1px solid #ff4d4d;
 }
+
 .form-container h2::after{
     content:'';
     width:60px;
     height:3px;
-    background:#4a90e2;
+    background:#00e6e6;
     display:block;
     margin:8px auto 0;
     border-radius:2px;
 }
+
 .form-group{
   margin-bottom:18px;
 }
+
 .form-group label{
     display:block;
     margin-bottom:6px;
     font-weight:500;
-    color:#555;
+    color:#cbd5e1; /* Muted text */
 }
+
 .form-group input,
 .form-group textarea{
     width: 100%;
     padding:12px 15px;
     border-radius:10px;
-    border:1px solid #ccc;
+    border:1px solid #334454;
+    background:#1a2b35; /* Dark input */
+    color:#fff;
     font-size:14px;
     outline:none;
     transition: 0.3s;
 }
+
 .form-group input:focus,
 .form-group textarea:focus{
-    border-color:#4a90e2;
-    box-shadow: 0 0 8px rgba(74,144,226,0.2);
+    border-color:#00e6e6;
+    box-shadow: 0 0 8px rgba(0,230,230,0.2);
 }
-input[type="file"]{padding:6px;}
+
+input[type="file"]{
+    padding:6px;
+    background:#1a2b35;
+    color:#fff;
+}
+
 button{
     width:100%;
     padding:14px;
-    background: linear-gradient(90deg,#4a90e2,#357abd);
+    background: linear-gradient(90deg,#00e6e6,#00b3b3);
     border:none;
     color:#fff;
     font-size:16px;
@@ -181,12 +202,14 @@ button{
     cursor:pointer;
     transition:0.3s;
 }
+
 button:hover{
-    background: linear-gradient(90deg,#357abd,#2a5a9e);
+    background: linear-gradient(90deg,#00b3b3,#009999);
 }
+
 i{
   margin-right:8px;
-  color:#4a90e2;
+  color:#00e6e6;
 }
 
 /* ===== CHECKBOX GROUP ===== */
@@ -196,12 +219,13 @@ i{
     gap: 15px; 
     font-size: 14px;
     margin-bottom: 25px; 
+    color:#cbd5e1;
 }
 
 .checkbox-group input[type="checkbox"] {
     width: 18px;
     height: 18px;
-    accent-color: #4a90e2;
+    accent-color: #00e6e6;
     cursor: pointer;
 }
 
@@ -211,7 +235,7 @@ i{
 }
 
 .checkbox-group a {
-    color: #4a90e2;
+    color: #00e6e6;
     text-decoration: none;
     font-weight: 500;
 }
@@ -222,11 +246,12 @@ i{
 
 a{
   text-decoration:none;
-  color:#4a90e2;
+  color:#00e6e6;
 }
 a:hover{
   text-decoration:underline;
 }
+
 @media(max-width:600px){
     .form-container{
       padding:30px 25px;
@@ -240,6 +265,7 @@ a:hover{
       font-size:20px;
     }
 }
+
 
 </style>
 </head>

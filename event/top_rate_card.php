@@ -1,19 +1,16 @@
 <?php
-require "includes/db.php"; // apna db connection
+require "includes/db.php"; 
 
 $today = date("Y-m-d");
 
-/* 
-  Closest upcoming events
-  aaj ke baad ke
-  sirf 4 events
-*/
 $query = "
     SELECT * FROM events 
     WHERE event_date >= '$today'
+    AND status = 'approved'
     ORDER BY event_date ASC
     LIMIT 4
 ";
+
 
 $result = mysqli_query($conn, $query);
 ?>
@@ -41,7 +38,7 @@ while($row = mysqli_fetch_assoc($result)):
   </div>
 
 <?php
-$active = ""; // only first slide active
+$active = ""; 
 endwhile;
 else:
 ?>

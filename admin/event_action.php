@@ -1,28 +1,24 @@
 <?php
-include 'admin_check.php';
-require "../includes/db.php";
+require_once("admin_check.php");
 
-if(!isset($_GET['id'], $_GET['type'])){
-    header("Location:event_pending_list.php");
-    exit;
+$id=(int)$_GET['id'];
+$type=$_GET['type'];
+
+if($type=="approve"){
+  mysqli_query($conn,"UPDATE events SET status='approved' WHERE id=$id");
+}
+elseif($type=="reject"){
+  mysqli_query($conn,"UPDATE events SET status='rejected' WHERE id=$id");
+}
+elseif($type=="stop"){
+  mysqli_query($conn,"UPDATE events SET is_closed=1 WHERE id=$id");
+}
+elseif($type=="delete"){
+  mysqli_query($conn,"DELETE FROM events WHERE id=$id");
 }
 
-$id   = (int) $_GET['id'];
-$type = $_GET['type'];
-
-if($type === "approve"){
-    $status = "approved";
-}
-elseif($type === "reject"){
-    $status = "rejected";
-}
-else{
-    header("Location: event_pending_list.php");
-    exit;
-}
-
-mysqli_query($conn, "UPDATE events SET status='$status' WHERE id=$id");
+mysqli_query($conn,"INSERT INTO admin_logs(admin_id,action)
+VALUES($_SESSION[user_id],'Event action: $type')");
 
 header("Location: event_pending_list.php");
 exit;
-?>

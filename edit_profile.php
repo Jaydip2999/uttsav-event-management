@@ -7,7 +7,7 @@ if($conn->connect_error) die("Database connection failed");
 
 /* ===== AUTH CHECK ===== */
 if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'organizer'){
-  header("Location: ../login.php");
+  header("Location: organizer/organizer_form.php");
   exit;
 }
 

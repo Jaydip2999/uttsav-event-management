@@ -16,9 +16,9 @@
     <div class="footer-box">
       <h3>Quick Links</h3>
       <ul>
-        <li><a href="index.php">Home</a></li>
-        <li><a href="event_card.php">Events</a></li>
-        <li><a href="event_form.php">Create Event</a></li>
+        <li><a href="/php/Event-management-system/index.php">Home</a></li>
+        <li> <a href="/php/Event-management-system/index.php#about">About</a></li>
+        <li><a href="/php/Event-management-system/event/event_cards.php">Events</a></li>
         <li><a href="auth/login.php">Login</a></li>
         <li><a href="auth/register.php">Register</a></li>
       </ul>

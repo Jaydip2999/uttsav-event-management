@@ -9,7 +9,7 @@ if(!isset($_SESSION['user_id'])){
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch organizer
+/* Fetch organizer */
 $org_stmt = $conn->prepare("SELECT id FROM organizers WHERE user_id = ?");
 $org_stmt->bind_param("i",$user_id);
 $org_stmt->execute();
@@ -26,46 +26,55 @@ if(isset($_POST['submit'])){
     $location    = $_POST['location'];
     $category    = $_POST['category'];
     $price       = $_POST['price'] ?? 0;
-    $h1          = $_POST['highlight1'];
-    $h2          = $_POST['highlight2'];
-    $h3          = $_POST['highlight3'];
-    $h4          = $_POST['highlight4'];
+
+    $total_slots = $_POST['total_slots'];   
+
+    $h1 = $_POST['highlight1'];
+    $h2 = $_POST['highlight2'];
+    $h3 = $_POST['highlight3'];
+    $h4 = $_POST['highlight4'];
 
     /* Image Upload */
-  $uploadDir = "../assets/images/events/";
+    $uploadDir = "../assets/images/events/";
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
 
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0777, true);
-}
+    $imageName = time() . "_" . basename($_FILES['image']['name']);
+    move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $imageName);
+    $image = $imageName;
 
-$imageName = time() . "_" . basename($_FILES['image']['name']);
-move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $imageName);
-
-$image = $imageName;
-
-    /* Insert Event (TABLE MATCHED) */
+    /* Insert Event */
     $stmt = $conn->prepare("
         INSERT INTO events
-        (organizer_id,title,description,image,event_date,event_time,location,category,price,
-        highlight1,highlight2,highlight3,highlight4)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+        (organizer_id, title, description, image, event_date, event_time, location, category, price,
+         total_slots, booked_slots, status,
+         highlight1, highlight2, highlight3, highlight4)
+        VALUES (?,?,?,?,?,?,?,?,?, ?,0,'pending', ?,?,?,?)
     ");
 
     $stmt->bind_param(
-        "issssssisssss",
-        $organizer['id'],$title,$description,$image,
-        $event_date,$event_time,$location,$category,$price,
+        "isssssssiissss",
+        $organizer['id'],
+        $title,
+        $description,
+        $image,
+        $event_date,
+        $event_time,
+        $location,
+        $category,
+        $price,
+        $total_slots,
         $h1,$h2,$h3,$h4
     );
 
     if($stmt->execute()){
         $success = " Event submitted successfully! Waiting for admin approval.";
     }else{
-        $error = "Something went wrong!";
+        $error = " Something went wrong!";
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -76,46 +85,52 @@ $image = $imageName;
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="assets/style.css">
-<style>:root{
-    --primary:#6366f1;
-    --primary-dark:#4f46e5;
-    --bg:#f5f7ff;
-    --card:#ffffff;
-    --border:#e5e7eb;
-    --text:#374151;
+<style>
+:root{
+    --primary:#00e6e6;       /* Bright cyan for buttons/highlights */
+    --primary-dark:#00b3b3;  /* Darker cyan for gradients */
+    --bg:#0f2027;            /* Dark background */
+    --card:#1f2a33;          /* Card background */
+    --border:#334454;        /* Input borders */
+    --text:#ffffff;          /* Main text color */
+    --text-muted:#cbd5e1;    /* Muted text */
 }
 
+/* Global */
 *{
     box-sizing:border-box;
     font-family:'Poppins',sans-serif;
 }
 
 body{
-    background:linear-gradient(135deg,#eef2ff,#f8fafc);
+    background: var(--bg);
     padding:24px;
-    color:var(--text);
+    color: var(--text);
 }
 
 /* ===== Card ===== */
 .wrapper{
     max-width:900px;
     margin:auto;
-    background:var(--card);
+    background: var(--card);
     padding:40px;
     border-radius:22px;
-    box-shadow:0 30px 60px rgba(0,0,0,.08);
+    box-shadow:0 30px 60px rgba(0,0,0,.4);
     animation:cardIn .6s ease;
 }
+
 .close-btn{
-  position: relative;
-  top:-15px;
-  right:-98%;
-  width:36px;
-  height:36px;
+    position: relative;
+    top:-15px;
+    right:-98%;
+    width:36px;
+    height:36px;
+    color: var(--text);
 }
+
 @keyframes cardIn{
-    from{opacity:0; transform:translateY(30px)}
-    to{opacity:1; transform:translateY(0)}
+    from{opacity:0; transform:translateY(30px);}
+    to{opacity:1; transform:translateY(0);}
 }
 
 /* ===== Heading ===== */
@@ -123,24 +138,33 @@ h2{
     text-align:center;
     font-size:26px;
     margin-bottom:30px;
-    color:var(--primary-dark);
+    color: var(--primary);
 }
 
 /* ===== Alerts ===== */
-.success,.error{
+.success{
     padding:14px 16px;
     border-radius:14px;
     margin-bottom:20px;
     font-weight:500;
     animation:fadeUp .4s ease;
+    background: rgba(0,230,230,0.2);
+    color: var(--primary);
 }
 
-.success{background:#dcfce7;color:#166534}
-.error{background:#fee2e2;color:#991b1b}
+.error{
+    padding:14px 16px;
+    border-radius:14px;
+    margin-bottom:20px;
+    font-weight:500;
+    animation:fadeUp .4s ease;
+    background: rgba(255,0,0,0.2);
+    color: #ff4d4d;
+}
 
 @keyframes fadeUp{
-    from{opacity:0; transform:translateY(10px)}
-    to{opacity:1; transform:translateY(0)}
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
 }
 
 /* ===== Grid ===== */
@@ -160,6 +184,7 @@ label{
     font-weight:500;
     margin-bottom:6px;
     display:block;
+    color: var(--text-muted);
 }
 
 /* ===== Inputs ===== */
@@ -168,26 +193,24 @@ input, textarea, select{
     padding:14px 16px;
     border-radius:14px;
     border:1px solid var(--border);
-    background:#f9fafb;
+    background:#1a2b35;
+    color: var(--text);
     font-size:14px;
     transition:all .3s ease;
 }
 
-/* Hover */
 input:hover, textarea:hover, select:hover{
-    background:#fff;
-    border-color:var(--primary);
+    background:#22303c;
+    border-color: var(--primary);
 }
 
-/* Focus */
 input:focus, textarea:focus, select:focus{
     outline:none;
-    border-color:var(--primary);
-    box-shadow:0 0 0 4px rgba(99,102,241,.15);
+    border-color: var(--primary);
+    box-shadow:0 0 0 4px rgba(0,230,230,.2);
     transform:translateY(-1px);
 }
 
-/* File input */
 input[type=file]{
     padding:12px;
 }
@@ -199,7 +222,7 @@ button{
     padding:16px;
     border:none;
     border-radius:16px;
-    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    background:linear-gradient(135deg, var(--primary), var(--primary-dark));
     color:#fff;
     font-size:16px;
     font-weight:500;
@@ -207,13 +230,11 @@ button{
     transition:all .35s ease;
 }
 
-/* Button hover */
 button:hover{
     transform:translateY(-3px);
-    box-shadow:0 18px 30px rgba(99,102,241,.4);
+    box-shadow:0 18px 30px rgba(0,230,230,.4);
 }
 
-/* Button active */
 button:active{
     transform:scale(.98);
 }
@@ -307,6 +328,11 @@ button:active{
 <div>
 <label>Price (₹)</label>
 <input type="number" name="price" value="0">
+</div>
+
+<div>
+    <label>Total Guest Slots *</label>
+    <input type="number" name="total_slots" min="1" required>
 </div>
 
 <div class="full">
