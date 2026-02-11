@@ -66,109 +66,66 @@ if(isset($_POST['update'])){
 <meta charset="UTF-8">
 <title>Edit Organizer Profile</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-:root{
-  --primary:#00e6e6;
-  --bg:#0f2027;
-  --card:#112a33;
-  --muted:#9fbfc7;
-}
-*{box-sizing:border-box;font-family:Poppins}
-body{
-  margin:0;
-  background:radial-gradient(circle at top,var(--bg),#000);
-  color:#fff;
-}
-.container{
-  max-width:600px;
-  margin:40px auto;
-  padding:20px;
-  animation:fade .8s ease;
-}
-@keyframes fade{
-  from{opacity:0;transform:translateY(30px)}
-  to{opacity:1}
-}
-.card{
-  background:var(--card);
-  border-radius:20px;
-  padding:30px;
-}
-.card h2{
-  margin-top:0;
-}
-label{
-  font-size:13px;
-  color:var(--muted);
-}
-input{
-  width:100%;
-  padding:12px 14px;
-  margin:8px 0 18px;
-  border-radius:12px;
-  border:none;
-  outline:none;
-}
-input[type=file]{
-  background:#fff;
-}
-.btn{
-  width:100%;
-  padding:14px;
-  border-radius:16px;
-  border:none;
-  background:linear-gradient(135deg,var(--primary),#00b3b3);
-  font-weight:600;
-  cursor:pointer;
-  transition:.3s;
-}
-.btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 25px rgba(0,230,230,.35);
-}
-.back{
-  display:block;
-  margin-top:18px;
-  text-align:center;
-  color:var(--primary);
-  text-decoration:none;
-}
-</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="assets/style.css">
 </head>
+<body class="op-edit-page">
 
-<body>
+<div class="op-edit-container">
+  <div class="op-edit-card">
+    <h2 class="op-edit-title">Edit Profile</h2>
 
-<div class="container">
-  <div class="card">
-    <h2>Edit Profile</h2>
+    <form method="post" enctype="multipart/form-data" class="op-edit-form">
 
-    <form method="post" enctype="multipart/form-data">
+      <div class="op-field">
+        <label>Full Name</label>
+        <input type="text" name="full_name"
+          value="<?= htmlspecialchars($org['full_name']) ?>" required>
+      </div>
 
-      <label>Full Name</label>
-      <input type="text" name="full_name" value="<?= htmlspecialchars($org['full_name']) ?>" required>
+      <div class="op-field">
+        <label>Company Name</label>
+        <input type="text" name="company_name"
+          value="<?= htmlspecialchars($org['company_name']) ?>">
+      </div>
 
-      <label>Company Name</label>
-      <input type="text" name="company_name" value="<?= htmlspecialchars($org['company_name']) ?>">
+      <div class="op-field">
+        <label>Mobile</label>
+        <input type="text" name="mobile"
+          value="<?= htmlspecialchars($org['mobile']) ?>">
+      </div>
 
-      <label>Mobile</label>
-      <input type="text" name="mobile" value="<?= htmlspecialchars($org['mobile']) ?>">
+      <div class="op-field">
+        <label>Website</label>
+        <input type="text" name="website"
+          value="<?= htmlspecialchars($org['website']) ?>">
+      </div>
 
-      <label>Website</label>
-      <input type="text" name="website" value="<?= htmlspecialchars($org['website']) ?>">
+      <div class="op-field">
+        <label>GST Number</label>
+        <input type="text" name="gst_number"
+          value="<?= htmlspecialchars($org['gst_number']) ?>">
+      </div>
 
-      <label>GST Number</label>
-      <input type="text" name="gst_number" value="<?= htmlspecialchars($org['gst_number']) ?>">
+      <!-- FILE UPLOAD -->
+      <div class="op-field">
+        <label>Profile Picture</label>
+        <div class="op-file">
+          <input type="file" name="profile_pic" id="opProfilePic" accept="image/*">
+          <label for="opProfilePic" class="op-file-label">
+            <i class="fa fa-upload"></i>
+            <span>Select profile image</span>
+          </label>
+        </div>
+      </div>
 
-      <label>Profile Picture</label>
-      <input type="file" name="profile_pic">
-
-      <button class="btn" name="update">Update Profile</button>
+      <button class="op-edit-btn" name="update">Update Profile</button>
     </form>
 
-    <a href="user_profile.php" class="back">← Back to Profile</a>
+    <a href="user_profile.php" class="op-edit-back">← Back to Profile</a>
   </div>
 </div>
 
 </body>
+
 </html>

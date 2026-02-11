@@ -54,58 +54,78 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// ===================event cards search and category ============
+// =================== EVENT SEARCH + CATEGORY FILTER ===================
 const categories = document.querySelectorAll(".category");
 const cards = document.querySelectorAll(".event-card");
+const searchInput = document.getElementById("searchInput");
 
+let activeCategory = "all";
+
+function filterEvents() {
+  const searchText = searchInput.value.toLowerCase();
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  cards.forEach(card => {
+    const cardCat = card.dataset.cat;
+    const eventDate = new Date(card.dataset.date);
+    eventDate.setHours(0,0,0,0);
+
+    const title = card.querySelector("h3").innerText.toLowerCase();
+    const desc  = card.querySelector("p").innerText.toLowerCase();
+    const location = card.querySelector(".event-meta").innerText.toLowerCase();
+
+    let show = true;
+
+    /* ===== CATEGORY FILTER ===== */
+    if (!["all","today","week","month","past"].includes(activeCategory)) {
+      show = cardCat === activeCategory;
+    }
+
+    if (activeCategory === "today") {
+      show = eventDate.getTime() === today.getTime();
+    }
+
+    if (activeCategory === "week") {
+      const diff = (eventDate - today) / (1000*60*60*24);
+      show = diff >= 0 && diff <= 7;
+    }
+
+    if (activeCategory === "month") {
+      show =
+        eventDate.getMonth() === today.getMonth() &&
+        eventDate.getFullYear() === today.getFullYear();
+    }
+
+    if (activeCategory === "past") {
+      show = eventDate < today;
+    }
+
+    /* ===== SEARCH FILTER ===== */
+    if (
+      !title.includes(searchText) &&
+      !desc.includes(searchText) &&
+      !location.includes(searchText)
+    ) {
+      show = false;
+    }
+
+    card.style.display = show ? "block" : "none";
+  });
+}
+
+/* CATEGORY CLICK */
 categories.forEach(cat => {
   cat.addEventListener("click", () => {
-
     categories.forEach(c => c.classList.remove("active"));
     cat.classList.add("active");
 
-    const filter = cat.dataset.cat;
-    const today = new Date();
-    today.setHours(0,0,0,0);
-
-    cards.forEach(card => {
-      const cardCat = card.dataset.cat;
-      const eventDate = new Date(card.dataset.date);
-      eventDate.setHours(0,0,0,0);
-
-      let show = true;
-
-      // NORMAL CATEGORY
-      if (!["all","today","week","month","past"].includes(filter)) {
-        show = cardCat === filter;
-      }
-
-      // TODAY
-      if (filter === "today") {
-        show = eventDate.getTime() === today.getTime();
-      }
-
-      // THIS WEEK
-      if (filter === "week") {
-        const diff = (eventDate - today) / (1000*60*60*24);
-        show = diff >= 0 && diff <= 7;
-      }
-
-      // THIS MONTH
-      if (filter === "month") {
-        show =
-          eventDate.getMonth() === today.getMonth() &&
-          eventDate.getFullYear() === today.getFullYear();
-      }
-
-      // 🔥 PAST EVENTS
-      if (filter === "past") {
-        show = eventDate < today;
-      }
-
-      card.style.display = show ? "block" : "none";
-    });
-
+    activeCategory = cat.dataset.cat;
+    searchInput.value = "";
+    searchInput.blur();
+    filterEvents();
   });
 });
 
+/* SEARCH INPUT */
+searchInput.addEventListener("keyup", filterEvents);

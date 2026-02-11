@@ -7,6 +7,7 @@ if(!isset($_SESSION['user_id'])){
     exit;
 }
 
+
 $user_id = $_SESSION['user_id'];
 
 /* Fetch organizer */
@@ -85,15 +86,16 @@ if(isset($_POST['submit'])){
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="assets/style.css">
+  
 <style>
 :root{
-    --primary:#00e6e6;       /* Bright cyan for buttons/highlights */
-    --primary-dark:#00b3b3;  /* Darker cyan for gradients */
-    --bg:#0f2027;            /* Dark background */
-    --card:#1f2a33;          /* Card background */
-    --border:#334454;        /* Input borders */
-    --text:#ffffff;          /* Main text color */
-    --text-muted:#cbd5e1;    /* Muted text */
+    --primary:#00e6e6;      
+    --primary-dark:#00b3b3; 
+    --bg:#0f2027;           
+    --card:#1f2a33;         
+    --border:#334454;        
+    --text:#ffffff;          
+    --text-muted:#cbd5e1;    
 }
 
 /* Global */

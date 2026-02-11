@@ -80,231 +80,18 @@ $isBookingClosed = ($availableSlots <= 0 || $isPastEvent);
 <title><?= htmlspecialchars($event['title']); ?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/style.css">
-<style>
-/* ===== RESET ===== *//* ===== GLOBAL ===== */
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Poppins',sans-serif;
-}
-
-html, body{
-  width:100%;
-  overflow-x:hidden;
-  background: #020617;
-}
-
-body{
-  margin:0;
-  background: radial-gradient(circle at top,#0f2f36 0%,#020617 55%);
-  font-family:'Poppins',sans-serif;
-  color:#e5e7eb;
-  padding-top:10vh;
-}
-
-/* ===== HERO ===== */
-.hero{
-  height:75vh;
-  background:url('<?= $eventImage ?>') center/cover no-repeat;
-  position:relative;
-  display:flex;
-  align-items:flex-end;
-}
-
-.hero-overlay{
-  position:absolute;
-  inset:0;
-  background:linear-gradient(
-    to top,
-    rgba(2,6,23,.95) 20%,
-    rgba(2,6,23,.45)
-  );
-}
-
-.hero-content{
-  position:relative;
-  padding:0 8% 50px;
-  animation:fadeUp .8s ease;
-}
-
-.hero h1{
-  font-size:38px;
-  font-weight:600;
-  color:#f8fafc;
-}
-
-.hero-meta span{
-  margin-right:18px;
-  font-size:14px;
-  color:#94a3b8;
-}
-
-/* ===== LAYOUT ===== */
-.wrapper{
-  padding:60px 8%;
-  display:grid;
-  grid-template-columns:2.6fr 1.4fr;
-  gap:40px;
-}
-
-/* ===== CARD ===== */
-.card{
-  background:linear-gradient(145deg, rgba(42, 51, 53,0.15),rgba(23, 45, 53, 0.5));
-  backdrop-filter:blur(14px);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:18px;
-  padding:28px;
-  margin-bottom:35px;
- box-shadow:0 25px 55px rgba(0,0,0,.45);
- backdrop-filter:blur(12px);
-}
-
-
-.section-title{
-  font-size:22px;
-  color: rgb(128, 231, 252);
-  margin-bottom:16px;
-}
-
-.card p{
-  line-height:1.9;
-  color:#cbd5e1;
-}
-
-/* ===== HIGHLIGHTS ===== */
-.highlights{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:14px;
-}
-
-.highlight{
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.06);
-  padding:14px;
-  border-radius:14px;
-  font-size:14px;
-  color:#e5e7eb;
-}
-
-.highlight i{
-  color:#cbd5e1;;
-}
-
-
-/* ===== ORGANIZER ===== */
-.organizer.compact{
-  display:flex;
-  gap:14px;
-  align-items:center;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.06);
-  padding:16px;
-  border-radius:16px;
-}
-
-.organizer img{
-  width:62px;
-  height:62px;
-  border-radius:50%;
-  object-fit:cover;
-  border:2px solid #22d3ee;
-}
-
-.company{
-  font-size:13px;
-  color:#94a3b8;
-  margin:2px 0;
-}
-
-.badge.approved{
-  background:rgba(34,211,238,.15);
-  color:#22d3ee;
-  font-size:11px;
-  padding:4px 12px;
-  border-radius:20px;
-}
-
-/* ===== SIDEBAR ===== */
-.sidebar{
-  position:sticky;
-  top:90px;
-}
-
-.info-row{
-  display:flex;
-  justify-content:space-between;
-  font-size:14px;
-  margin-bottom:14px;
-  color:#cbd5e1;
-}
-
-/* ===== PRICE ===== */
-.price{
-  font-size:40px;
-  font-weight:700;
-  text-align:center;
-  margin:26px 0;
-  background:linear-gradient(135deg,#22d3ee,#06b6d4);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-/* ===== BUTTON ===== */
-.book-btn{
-  width:100%;
-  padding:15px;
-  border:none;
-   background:linear-gradient(90deg,#00e6e6,#00b3b3);
-  color:#020617;
-  border-radius:16px;
-  font-size:16px;
-  font-weight:600;
-  cursor:pointer;
-  transition:.35s ease;
-}
-
-.book-btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 0 30px rgba(34,211,238,.55);
-}
-
-/* ===== ANIMATION ===== */
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(25px)}
-  to{opacity:1;transform:none}
-}
-
-/* ===== MOBILE ===== */
-@media(max-width:768px){
-  .wrapper{
-    grid-template-columns:1fr;
-    padding:35px 6%;
-  }
-  .hero h1{
-    font-size:26px;
-  }
-  .highlights{
-    grid-template-columns:1fr;
-  }
-  .card{
-    font-size:11px;
-  }
-  body{
-    margin-top:-10%;
-  }
-}
-
-</style>
+    <link rel="stylesheet" href="event.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
 <?php include "../includes/header.php"; ?>
-
-<section class="hero">
+<div class="event-detail">
+<section class="hero" style="background:url('<?= $eventImage ?>') center/cover no-repeat;">
+  <a href="javascript:history.back()" class="back-btn">
+  <i class="fa-solid fa-arrow-left-long"></i> Back
+</a>
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <h1><?= htmlspecialchars($event['title']); ?></h1>
@@ -403,7 +190,7 @@ body{
 </div>
 </div>
 </section>
-
+</div>
 <?php include "../includes/footer.php"; ?>
 <script src="../assets/script.js"></script>
 </body>
