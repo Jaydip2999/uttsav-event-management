@@ -885,7 +885,7 @@ p {
 .form-container button{
   width:100%;
   padding:14px;
-  background: linear-gradient(90deg,var(--primary-color),var(--primary-dark));
+  background: linear-gradient(90deg,rgb(22, 76, 87),rgba(163, 235, 249, 0.97));
   border:none;
   border-radius:12px;
   color:#fff;
@@ -1049,7 +1049,6 @@ p {
 }
 
 /* ===============edit profile============== */
-/* ================= EDIT ORGANIZER PROFILE (ISOLATED) ================= */
 
 .op-edit-page{
   background:radial-gradient(circle at top,var(--bg),#000);

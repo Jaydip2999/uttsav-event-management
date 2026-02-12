@@ -89,270 +89,250 @@ if(isset($_POST['submit'])){
   
 <style>
 :root{
-    --primary:#00e6e6;      
-    --primary-dark:#00b3b3; 
-    --bg:#0f2027;           
-    --card:#1f2a33;         
-    --border:#334454;        
-    --text:#ffffff;          
-    --text-muted:#cbd5e1;    
+  --primary:#00e6e6;
+  --primary-dark:#00b3b3;
+  --bg:#0f2027;
+  --card:#1f2a33;
+  --border:#334454;
+  --text:#ffffff;
+  --text-muted:#cbd5e1;
 }
 
-/* Global */
+/* RESET */
 *{
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
 }
 
 body{
-    background: var(--bg);
-    padding:24px;
-    color: var(--text);
+  margin:0;
+  background:var(--bg);
+  padding:18px;
+  color:var(--text);
 }
 
-/* ===== Card ===== */
+/* ===== CARD ===== */
 .wrapper{
-    max-width:900px;
-    margin:auto;
-    background: var(--card);
-    padding:40px;
-    border-radius:22px;
-    box-shadow:0 30px 60px rgba(0,0,0,.4);
-    animation:cardIn .6s ease;
+  max-width:760px;
+  margin:auto;
+  background:var(--card);
+  padding:28px;
+  border-radius:18px;
+  box-shadow:0 25px 50px rgba(0,0,0,.45);
+  animation:fadeIn .5s ease;
+  position:relative;
 }
 
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:none}
+}
+
+/* CLOSE */
 .close-btn{
-    position: relative;
-    top:-15px;
-    right:-98%;
-    width:36px;
-    height:36px;
-    color: var(--text);
+  position:absolute;
+  top:18px;
+  right:18px;
+  font-size:18px;
+  color:#cbd5e1;
+  text-decoration:none;
 }
+.close-btn:hover{color:var(--primary)}
 
-@keyframes cardIn{
-    from{opacity:0; transform:translateY(30px);}
-    to{opacity:1; transform:translateY(0);}
-}
-
-/* ===== Heading ===== */
+/* TITLE */
 h2{
-    text-align:center;
-    font-size:26px;
-    margin-bottom:30px;
-    color: var(--primary);
+  text-align:center;
+  font-size:22px;
+  margin-bottom:22px;
+  color:var(--primary);
 }
 
-/* ===== Alerts ===== */
+/* ALERTS */
+.success,.error{
+  padding:12px 14px;
+  border-radius:12px;
+  margin-bottom:16px;
+  font-size:14px;
+}
 .success{
-    padding:14px 16px;
-    border-radius:14px;
-    margin-bottom:20px;
-    font-weight:500;
-    animation:fadeUp .4s ease;
-    background: rgba(0,230,230,0.2);
-    color: var(--primary);
+  background:rgba(0,230,230,.18);
+  color:var(--primary);
 }
-
 .error{
-    padding:14px 16px;
-    border-radius:14px;
-    margin-bottom:20px;
-    font-weight:500;
-    animation:fadeUp .4s ease;
-    background: rgba(255,0,0,0.2);
-    color: #ff4d4d;
+  background:rgba(255,0,0,.18);
+  color:#ff4d4d;
 }
 
-@keyframes fadeUp{
-    from{opacity:0; transform:translateY(10px);}
-    to{opacity:1; transform:translateY(0);}
-}
-
-/* ===== Grid ===== */
+/* GRID */
 .form-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:22px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:16px;
 }
+.full{grid-column:1/-1}
 
-.full{
-    grid-column:1 / -1;
-}
-
-/* ===== Labels ===== */
+/* LABEL */
 label{
-    font-size:14px;
-    font-weight:500;
-    margin-bottom:6px;
-    display:block;
-    color: var(--text-muted);
+  font-size:13px;
+  margin-bottom:6px;
+  display:block;
+  color:var(--text-muted);
 }
 
-/* ===== Inputs ===== */
-input, textarea, select{
-    width:100%;
-    padding:14px 16px;
-    border-radius:14px;
-    border:1px solid var(--border);
-    background:#1a2b35;
-    color: var(--text);
-    font-size:14px;
-    transition:all .3s ease;
+/* INPUTS */
+input,textarea,select{
+  width:100%;
+  padding:11px 13px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:#1a2b35;
+  color:var(--text);
+  font-size:13px;
+  transition:.25s;
 }
 
-input:hover, textarea:hover, select:hover{
-    background:#22303c;
-    border-color: var(--primary);
+textarea{min-height:90px}
+
+input:focus,textarea:focus,select:focus{
+  outline:none;
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(0,230,230,.18);
 }
 
-input:focus, textarea:focus, select:focus{
-    outline:none;
-    border-color: var(--primary);
-    box-shadow:0 0 0 4px rgba(0,230,230,.2);
-    transform:translateY(-1px);
+/* FILE */
+.custom-file input{display:none}
+
+.file-label{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  padding:11px;
+  border:2px dashed var(--border);
+  border-radius:12px;
+  cursor:pointer;
+  font-size:13px;
+  color:var(--text-muted);
+  transition:.3s;
+}
+.file-label:hover{
+  border-color:var(--primary);
+  color:var(--primary);
 }
 
-input[type=file]{
-    padding:12px;
-}
+/* HIGHLIGHTS */
+.highlight-group input{margin-bottom:8px}
 
-/* ===== Button ===== */
+/* BUTTON */
 button{
-    margin-top:30px;
-    width:100%;
-    padding:16px;
-    border:none;
-    border-radius:16px;
-    background:linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color:#fff;
-    font-size:16px;
-    font-weight:500;
-    cursor:pointer;
-    transition:all .35s ease;
+  margin-top:20px;
+  width:100%;
+  padding:13px;
+  border:none;
+  border-radius:14px;
+  background:linear-gradient(90deg,rgb(22, 76, 87),rgba(163, 235, 249, 0.97));
+  font-size:15px;
+  font-weight:500;
+  cursor:pointer;
+  transition:.3s;
+  color:white;
 }
-
 button:hover{
-    transform:translateY(-3px);
-    box-shadow:0 18px 30px rgba(0,230,230,.4);
+  transform:translateY(-2px);
+  box-shadow:0 14px 26px rgba(0,230,230,.35);
 }
 
-button:active{
-    transform:scale(.98);
-}
-
-/* ===== Highlights spacing ===== */
-.highlight-group input{
-    margin-bottom:10px;
-}
-
-/* ===== Mobile ===== */
-@media(max-width:768px){
-    body{
-        padding:14px;
-    }
-
-    .wrapper{
-        padding:26px 20px;
-        border-radius:18px;
-    }
-
-    h2{
-        font-size:22px;
-    }
-
-    .form-grid{
-        grid-template-columns:1fr;
-        gap:18px;
-    }
-
-    button{
-        font-size:15px;
-        padding:14px;
-    }
+/* MOBILE */
+@media(max-width:700px){
+  .form-grid{grid-template-columns:1fr}
+  h2{font-size:20px}
 }
 
 </style>
 
 </head>
-<body>
-<div class="wrapper">
-       <a href="../index.php" class="close-btn">
-  <i class="fa-solid fa-xmark"></i>
-</a>
-<h2>Submit New Event</h2>
+<body><div class="wrapper">
+  <a href="../index.php" class="close-btn">
+    <i class="fa-solid fa-xmark"></i>
+  </a>
 
-<?php if($success) echo "<div class='success'>$success</div>"; ?>
-<?php if($error) echo "<div class='error'>$error</div>"; ?>
+  <h2>Submit New Event</h2>
 
-<form method="POST" enctype="multipart/form-data">
+  <?php if($success) echo "<div class='success'>$success</div>"; ?>
+  <?php if($error) echo "<div class='error'>$error</div>"; ?>
 
-<div class="form-grid">
+  <form method="POST" enctype="multipart/form-data">
+    <div class="form-grid">
 
-<div class="full">
-<label>Event Title *</label>
-<input type="text" name="title" required minlength="5" maxlength="150" required>
-</div>
+      <div class="full">
+        <label>Event Title *</label>
+        <input type="text" name="title" required>
+      </div>
 
-<div class="full">
-<label>Description *</label>
-<textarea name="description" required minlength="20" required></textarea>
-</div>
+      <div class="full">
+        <label>Description *</label>
+        <textarea name="description" required></textarea>
+      </div>
 
-<div>
-<label>Date *</label>
-<input type="date" name="event_date" required min="<?= date('Y-m-d'); ?>" required>
-</div>
+      <div>
+        <label>Date *</label>
+        <input type="date" name="event_date" min="<?= date('Y-m-d'); ?>" required>
+      </div>
 
-<div>
-<label>Time *</label>
+      <div>
+        <label>Time *</label>
+        <input type="time" name="event_time" required>
+      </div>
 
-<input type="time" name="event_time" required>
-</div>
+      <div class="full">
+        <label>Location *</label>
+        <input type="text" name="location" required>
+      </div>
 
-<div class="full">
-<label>Location *</label>
-<input type="text" name="location" required minlength="3" required>
-</div>
+      <div>
+        <label>Category *</label>
+        <select name="category" required>
+          <option value="">Select</option>
+          <option>Music</option>
+          <option>Technology</option>
+          <option>Sports</option>
+          <option>Education</option>
+          <option>Business</option>
+        </select>
+      </div>
 
-<div>
-<label>Category *</label>
-<select name="category" required>
-  <option value="">Select</option>
-  <option value="Music">Music</option>
-  <option value="Technology">Technology</option>
-  <option value="Sports">Sports</option>
-  <option value="Education">Education</option>
-  <option value="Business">Business</option>
-</select>
-</div>
+      <div>
+        <label>Price (₹)</label>
+        <input type="number" name="price" value="0">
+      </div>
 
-<div>
-<label>Price (₹)</label>
-<input type="number" name="price" value="0">
-</div>
+      <div>
+        <label>Total Slots *</label>
+        <input type="number" name="total_slots" min="1" required>
+      </div>
 
-<div>
-    <label>Total Guest Slots *</label>
-    <input type="number" name="total_slots" min="1" required>
-</div>
+      <div class="full">
+        <label>Event Image *</label>
+        <div class="custom-file">
+          <input type="file" name="image" id="image" required>
+          <label for="image" class="file-label">
+            <i class="fa fa-upload"></i> Select Image
+          </label>
+        </div>
+      </div>
 
-<div class="full">
-<label>Main Image</label>
-<input type="file" name="image" required>
-</div>
-<div class="full highlight-group">
-    <label>Event Highlights</label>
-    <input type="text" name="highlight1" placeholder="Highlight 1">
-    <input type="text" name="highlight2" placeholder="Highlight 2">
-    <input type="text" name="highlight3" placeholder="Highlight 3">
-    <input type="text" name="highlight4" placeholder="Highlight 4">
-</div>
+      <div class="full highlight-group">
+        <label>Event Highlights</label>
+        <input type="text" name="highlight1" placeholder="Highlight 1">
+        <input type="text" name="highlight2" placeholder="Highlight 2">
+        <input type="text" name="highlight3" placeholder="Highlight 3">
+        <input type="text" name="highlight4" placeholder="Highlight 4">
+      </div>
 
-</div>
+    </div>
 
-<button name="submit">Submit Event</button>
-</form>
+    <button name="submit">Submit Event</button>
+  </form>
 </div>
 
 

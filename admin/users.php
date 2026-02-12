@@ -1,42 +1,72 @@
 <?php
-require_once("admin_check.php");
-$u = mysqli_query($conn,"SELECT * FROM users");
+require "admin_check.php";
+require "../includes/db.php";
+
+$q = mysqli_query($conn,"SELECT * FROM users ORDER BY id DESC");
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Users</title>
+
 <link rel="stylesheet" href="admin.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 
-<?php require "admin_sidebar.php"; ?>
-
 <div class="layout">
+
+  <!-- SIDEBAR -->
+  <?php include "admin_sidebar.php"; ?>
+
+  <!-- MAIN -->
   <div class="main">
-    <h2>Users</h2>
+    <div class="container">
 
-    <div class="table-wrapper">
-      <table>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
-        </tr>
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <h1>
+          <i class="fa-solid fa-users"></i> Users
+        </h1>
+        <p>All registered users</p>
+      </div>
 
-        <?php while($r=mysqli_fetch_assoc($u)){ ?>
-        <tr>
-          <td><?=$r['id']?></td>
-          <td><?=htmlspecialchars($r['name'])?></td>
-          <td><?=htmlspecialchars($r['email'])?></td>
-          <td><?=$r['role']?></td>
-        </tr>
-        <?php } ?>
-      </table>
+      <!-- USERS GRID -->
+      <div class="data-grid">
+
+        <?php while($u=mysqli_fetch_assoc($q)): ?>
+        <div class="data-card">
+
+          <div class="data-card-header">
+            <strong><?= htmlspecialchars($u['name']) ?></strong>
+            <span class="badge success">
+              <i class="fa-solid fa-user-check"></i> Active
+            </span>
+          </div>
+
+          <div class="data-meta">
+            <i class="fa-solid fa-envelope"></i>
+            <?= htmlspecialchars($u['email']) ?>
+          </div>
+
+          <div class="data-actions">
+            <a href="delete_user.php?id=<?= $u['id'] ?>"
+               onclick="return confirm('Delete this user?')"
+               class="btn btn-danger">
+              <i class="fa-solid fa-trash"></i> Delete
+            </a>
+          </div>
+
+        </div>
+        <?php endwhile; ?>
+
+      </div>
+
     </div>
-
   </div>
+
 </div>
 
 </body>

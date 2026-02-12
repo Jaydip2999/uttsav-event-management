@@ -1,6 +1,6 @@
 <?php
 require_once("admin_check.php");
-
+require "../includes/db.php";
 if(!isset($_GET['id']) || !isset($_GET['uid'])){
     header("Location: organizer_requests.php");
     exit;

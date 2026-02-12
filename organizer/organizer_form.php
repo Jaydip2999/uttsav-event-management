@@ -106,7 +106,7 @@ if(!empty($_FILES['profile_pic']['name'])){
         <div class="form-group">
             <label>Profile Picture</label>
              <div class="custom-file">
-             <input type="file" name="profile_pic" id="profile_pic" accept="image/*">
+             <input type="file" name="profile_pic" id="profile_pic" accept="image/*" required>
              <label for="profile_pic" class="file-label">
             <i class="fa fa-upload"></i> <span>Select profile image</span>
              </label>

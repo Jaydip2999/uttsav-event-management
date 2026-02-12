@@ -1,11 +1,6 @@
 <?php
 session_start();
 require "../includes/db.php";
-// $conn = mysqli_connect("localhost","root","","event_management");
-// if(!$conn){
-//     die("Connection failed");
-// }
-
 $error = "";
 
 if(isset($_POST['login'])){

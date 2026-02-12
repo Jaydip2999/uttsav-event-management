@@ -1,10 +1,6 @@
 <?php
 session_start();
-
-$conn = mysqli_connect("localhost","root","","event_management");
-if(!$conn){
-    die("Connection failed");
-}
+require "../includes/db.php";
 
 $error = "";
 if(isset($_POST['register'])){
@@ -34,7 +30,6 @@ if(isset($_POST['register'])){
         if(mysqli_num_rows($check) > 0){
             $error = "Email already registered!";
         } else {
-            // TEMPORARY plain password
             $sql = "INSERT INTO users(name,email,password)
                     VALUES('$name','$email','$password')";
             $_SESSION['user_name'] = $name;
@@ -62,22 +57,20 @@ if(isset($_POST['register'])){
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="auth.css">
-
-  <!-- Custom Styles -->
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   <form action="register.php" method="post">
   <div class="auth-wrapper">
-  <!-- LEFT SIDE (Same branding as login) -->
+  <!-- LEFT SIDE  -->
   <div class="auth-left">
       <img src="../assets/images/logo.png" alt="logo">
     <h2>Create Account</h2>
     <p>Join us to manage and organize events professionally.</p>
   </div>
 
-  <!-- RIGHT SIDE (FORM) -->
+  <!-- RIGHT SIDE -->
   <div class="auth-right">
     <h2>Register</h2>
 
