@@ -22,46 +22,84 @@ if(isset($_POST['submit'])){
 
     $full_name    = mysqli_real_escape_string($conn,$_POST['full_name']);
     $mobile       = mysqli_real_escape_string($conn,$_POST['mobile']);
+    $form_email   = mysqli_real_escape_string($conn,$_POST['email']);
     $address      = mysqli_real_escape_string($conn,$_POST['address'] ?? '');
     $company_name = mysqli_real_escape_string($conn,$_POST['company_name'] ?? '');
     $gst_number   = mysqli_real_escape_string($conn,$_POST['gst_number'] ?? '');
     $website      = mysqli_real_escape_string($conn,$_POST['website'] ?? '');
 
-    /* ✅ DUPLICATE CHECK (USER BASED) */
-    $check = mysqli_query(
-        $conn,
-        "SELECT id FROM organizers WHERE user_id=$user_id LIMIT 1"
-    );
-
-    if(mysqli_num_rows($check) > 0){
-        $error_msg = "You have already applied for organizer.";
+    /* ✅ MOBILE VALIDATION (10 DIGITS ONLY) */
+    if(!preg_match('/^[0-9]{10}$/', $mobile)){
+        $error_msg = "Mobile number must be exactly 10 digits.";
     }
 
-  $profile_path = "";
-if(!empty($_FILES['profile_pic']['name'])){
-    $uploadDir = __DIR__ . "/uploads/profile_pics/"; 
+    else{
 
-    if(!is_dir($uploadDir)) mkdir($uploadDir,0777,true);
+        /* CHECK EXISTING ORGANIZER RECORD */
+        $check = mysqli_query(
+            $conn,
+            "SELECT id,status FROM organizers WHERE user_id=$user_id LIMIT 1"
+        );
 
-    $profile_path = time().'_'.basename($_FILES['profile_pic']['name']);
-    move_uploaded_file($_FILES['profile_pic']['tmp_name'], $uploadDir.$profile_path);
-}
+        if(mysqli_num_rows($check) > 0){
 
+            $existing = mysqli_fetch_assoc($check);
 
-    /* ================= INSERT ================= */
-    if($error_msg == ""){
-        $sql = "INSERT INTO organizers
-        (user_id, full_name, mobile, email, profile_pic,company_name ,gst_number,website,address,status)
-        VALUES
-        ($user_id,'$full_name','$mobile','$email','$profile_path','$company_name','$gst_number','$website','$address','pending')";
+            if($existing['status'] == 'pending'){
+                $error_msg = "Your previous request is still pending.";
+            }
+            elseif($existing['status'] == 'approved'){
+                $error_msg = "You are already an approved organizer.";
+            }
+            elseif($existing['status'] == 'rejected'){
 
-        if(mysqli_query($conn,$sql)){
-            $success_msg = "Registration submitted successfully. Admin approval pending.";
+                // 🔥 UPDATE INSTEAD OF INSERT
+                $sql = "UPDATE organizers SET
+                        full_name='$full_name',
+                        mobile='$mobile',
+                        email='$form_email',
+                        company_name='$company_name',
+                        gst_number='$gst_number',
+                        website='$website',
+                        address='$address',
+                        status='pending'
+                        WHERE user_id=$user_id";
+
+                if(mysqli_query($conn,$sql)){
+                    $success_msg = "Re-application submitted successfully. Admin approval pending.";
+                } else {
+                    $error_msg = "Database error.";
+                }
+
+            }
+
         } else {
-            $error_msg = "Database error.";
+
+            /* ================= PROFILE UPLOAD ================= */
+            $profile_path = "";
+            if(!empty($_FILES['profile_pic']['name'])){
+                $uploadDir = __DIR__ . "/uploads/profile_pics/";
+                if(!is_dir($uploadDir)) mkdir($uploadDir,0777,true);
+
+                $profile_path = time().'_'.basename($_FILES['profile_pic']['name']);
+                move_uploaded_file($_FILES['profile_pic']['tmp_name'], $uploadDir.$profile_path);
+            }
+
+            /* ================= INSERT ================= */
+            $sql = "INSERT INTO organizers
+            (user_id, full_name, mobile, email, profile_pic, company_name, gst_number, website, address, status)
+            VALUES
+            ($user_id,'$full_name','$mobile','$form_email','$profile_path','$company_name','$gst_number','$website','$address','pending')";
+
+            if(mysqli_query($conn,$sql)){
+                $success_msg = "Registration submitted successfully. Admin approval pending.";
+            } else {
+                $error_msg = "Database error.";
+            }
         }
     }
 }
+
 ?>
 
 
