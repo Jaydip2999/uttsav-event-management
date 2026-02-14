@@ -7,7 +7,6 @@ if(!isset($_SESSION['user_id'])){
     exit;
 }
 
-
 $user_id = $_SESSION['user_id'];
 
 /* Fetch organizer */
@@ -27,8 +26,7 @@ if(isset($_POST['submit'])){
     $location    = $_POST['location'];
     $category    = $_POST['category'];
     $price       = $_POST['price'] ?? 0;
-
-    $total_slots = $_POST['total_slots'];   
+    $total_slots = $_POST['total_slots'];
 
     $h1 = $_POST['highlight1'];
     $h2 = $_POST['highlight2'];
@@ -45,7 +43,6 @@ if(isset($_POST['submit'])){
     move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $imageName);
     $image = $imageName;
 
-    /* Insert Event */
     $stmt = $conn->prepare("
         INSERT INTO events
         (organizer_id, title, description, image, event_date, event_time, location, category, price,
@@ -70,271 +67,114 @@ if(isset($_POST['submit'])){
     );
 
     if($stmt->execute()){
-        $success = " Event submitted successfully! Waiting for admin approval.";
+        $success = "Event submitted successfully! Waiting for admin approval.";
     }else{
-        $error = " Something went wrong!";
+        $error = "Something went wrong!";
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Submit New Event</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/style.css">
-  
-<style>
-:root{
-  --primary:#00e6e6;
-  --primary-dark:#00b3b3;
-  --bg:#0f2027;
-  --card:#1f2a33;
-  --border:#334454;
-  --text:#ffffff;
-  --text-muted:#cbd5e1;
-}
-
-/* RESET */
-*{
-  box-sizing:border-box;
-  font-family:'Poppins',sans-serif;
-}
-
-body{
-  margin:0;
-  background:var(--bg);
-  padding:18px;
-  color:var(--text);
-}
-
-/* ===== CARD ===== */
-.wrapper{
-  max-width:760px;
-  margin:auto;
-  background:var(--card);
-  padding:28px;
-  border-radius:18px;
-  box-shadow:0 25px 50px rgba(0,0,0,.45);
-  animation:fadeIn .5s ease;
-  position:relative;
-}
-
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(20px)}
-  to{opacity:1;transform:none}
-}
-
-/* CLOSE */
-.close-btn{
-  position:absolute;
-  top:18px;
-  right:18px;
-  font-size:18px;
-  color:#cbd5e1;
-  text-decoration:none;
-}
-.close-btn:hover{color:var(--primary)}
-
-/* TITLE */
-h2{
-  text-align:center;
-  font-size:22px;
-  margin-bottom:22px;
-  color:var(--primary);
-}
-
-/* ALERTS */
-.success,.error{
-  padding:12px 14px;
-  border-radius:12px;
-  margin-bottom:16px;
-  font-size:14px;
-}
-.success{
-  background:rgba(0,230,230,.18);
-  color:var(--primary);
-}
-.error{
-  background:rgba(255,0,0,.18);
-  color:#ff4d4d;
-}
-
-/* GRID */
-.form-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:16px;
-}
-.full{grid-column:1/-1}
-
-/* LABEL */
-label{
-  font-size:13px;
-  margin-bottom:6px;
-  display:block;
-  color:var(--text-muted);
-}
-
-/* INPUTS */
-input,textarea,select{
-  width:100%;
-  padding:11px 13px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background:#1a2b35;
-  color:var(--text);
-  font-size:13px;
-  transition:.25s;
-}
-
-textarea{min-height:90px}
-
-input:focus,textarea:focus,select:focus{
-  outline:none;
-  border-color:var(--primary);
-  box-shadow:0 0 0 3px rgba(0,230,230,.18);
-}
-
-/* FILE */
-.custom-file input{display:none}
-
-.file-label{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:8px;
-  padding:11px;
-  border:2px dashed var(--border);
-  border-radius:12px;
-  cursor:pointer;
-  font-size:13px;
-  color:var(--text-muted);
-  transition:.3s;
-}
-.file-label:hover{
-  border-color:var(--primary);
-  color:var(--primary);
-}
-
-/* HIGHLIGHTS */
-.highlight-group input{margin-bottom:8px}
-
-/* BUTTON */
-button{
-  margin-top:20px;
-  width:100%;
-  padding:13px;
-  border:none;
-  border-radius:14px;
-  background:linear-gradient(90deg,rgb(22, 76, 87),rgba(163, 235, 249, 0.97));
-  font-size:15px;
-  font-weight:500;
-  cursor:pointer;
-  transition:.3s;
-  color:white;
-}
-button:hover{
-  transform:translateY(-2px);
-  box-shadow:0 14px 26px rgba(0,230,230,.35);
-}
-
-/* MOBILE */
-@media(max-width:700px){
-  .form-grid{grid-template-columns:1fr}
-  h2{font-size:20px}
-}
-
-</style>
-
+<title>Submit Event</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="event.css">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body><div class="wrapper">
-  <a href="../index.php" class="close-btn">
-    <i class="fa-solid fa-xmark"></i>
-  </a>
 
-  <h2>Submit New Event</h2>
+<body class="event-form-page">
+  <?php include"../includes/header.php";?>
 
-  <?php if($success) echo "<div class='success'>$success</div>"; ?>
-  <?php if($error) echo "<div class='error'>$error</div>"; ?>
+<div class="event-form-container">
 
-  <form method="POST" enctype="multipart/form-data">
-    <div class="form-grid">
+    <h2><i class="fa-solid fa-calendar-plus"></i> Create New Event</h2>
 
-      <div class="full">
-        <label>Event Title *</label>
-        <input type="text" name="title" required>
-      </div>
+    <?php if($success) echo "<div class='alert success'>$success</div>"; ?>
+    <?php if($error) echo "<div class='alert error'>$error</div>"; ?>
 
-      <div class="full">
-        <label>Description *</label>
-        <textarea name="description" required></textarea>
-      </div>
+    <form method="POST" enctype="multipart/form-data">
 
-      <div>
-        <label>Date *</label>
-        <input type="date" name="event_date" min="<?= date('Y-m-d'); ?>" required>
-      </div>
+        <div class="form-grid">
 
-      <div>
-        <label>Time *</label>
-        <input type="time" name="event_time" required>
-      </div>
+            <div class="full input-group">
+                <label>Event Title</label>
+                <input type="text" name="title" required>
+            </div>
 
-      <div class="full">
-        <label>Location *</label>
-        <input type="text" name="location" required>
-      </div>
+            <div class="full input-group">
+                <label>Description</label>
+                <textarea name="description" required></textarea>
+            </div>
 
-      <div>
-        <label>Category *</label>
-        <select name="category" required>
-          <option value="">Select</option>
-          <option>Music</option>
-          <option>Technology</option>
-          <option>Sports</option>
-          <option>Education</option>
-          <option>Business</option>
-        </select>
-      </div>
+            <div class="input-group">
+                <label>Date</label>
+                <input type="date" name="event_date" min="<?= date('Y-m-d'); ?>" required>
+            </div>
 
-      <div>
-        <label>Price (₹)</label>
-        <input type="number" name="price" value="0">
-      </div>
+            <div class="input-group">
+                <label>Time</label>
+                <input type="time" name="event_time" required>
+            </div>
 
-      <div>
-        <label>Total Slots *</label>
-        <input type="number" name="total_slots" min="1" required>
-      </div>
+            <div class="full input-group">
+                <label>Location</label>
+                <input type="text" name="location" required>
+            </div>
 
-      <div class="full">
-        <label>Event Image *</label>
-        <div class="custom-file">
-          <input type="file" name="image" id="image" required>
-          <label for="image" class="file-label">
-            <i class="fa fa-upload"></i> Select Image
-          </label>
+            <div class="input-group">
+                <label>Category</label>
+                <select name="category" required>
+                    <option value="">Select</option>
+                    <option>Music</option>
+                    <option>Technology</option>
+                    <option>Sports</option>
+                    <option>Education</option>
+                    <option>Business</option>
+                    <option>Others</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Price (₹)</label>
+                <input type="number" name="price" value="0">
+            </div>
+
+            <div class="input-group">
+                <label>Total Slots</label>
+                <input type="number" name="total_slots" min="1" required>
+            </div>
+
+            <!-- Professional Upload UI -->
+            <div class="full upload-area">
+                <input type="file" name="image" id="image" required>
+                <label for="image">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>Click to upload event image</span>
+                </label>
+            </div>
+
+            <div class="full highlights">
+                <label>Event Highlights</label>
+                <input type="text" name="highlight1" placeholder="Highlight 1">
+                <input type="text" name="highlight2" placeholder="Highlight 2">
+                <input type="text" name="highlight3" placeholder="Highlight 3">
+                <input type="text" name="highlight4" placeholder="Highlight 4">
+            </div>
+
         </div>
-      </div>
 
-      <div class="full highlight-group">
-        <label>Event Highlights</label>
-        <input type="text" name="highlight1" placeholder="Highlight 1">
-        <input type="text" name="highlight2" placeholder="Highlight 2">
-        <input type="text" name="highlight3" placeholder="Highlight 3">
-        <input type="text" name="highlight4" placeholder="Highlight 4">
-      </div>
+        <button type="submit" name="submit">
+            <i class="fa-solid fa-paper-plane"></i> Submit Event
+        </button>
 
-    </div>
+    </form>
 
-    <button name="submit">Submit Event</button>
-  </form>
 </div>
-
-
+<?php include"../includes/footer.php";?>
+<script src="../assets/script.js"></script>
 </body>
 </html>

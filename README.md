@@ -77,6 +77,12 @@ Work Description:
 Today, I focused on refining the Events section of the Event Management System. I reviewed the existing layout and reorganized the event cards so that information is displayed in a clearer and more structured way. I made changes to the CSS to improve spacing, alignment, and text readability.
 I also worked on improving button styles and hover effects to make interactions smoother and more user-friendly. While reviewing the code, I removed unnecessary styles and cleaned up the structure to make it easier to maintain and understand.
 After completing the design updates, I tested the Events section on different screen sizes and fixed small responsiveness issues to ensure consistent behavior across devices.
-Outcome:
-The Events section now looks more organized, consistent, and responsive, improving both usability and code quality.#   u t t s a v - e v e n t - m a n a g e m e n t  
- 
+
+
+
+day 35:
+Today, I started working on the Event Creation feature. I created a new page where admin can add event details such as event name, date, location, and description.
+
+I designed a simple form layout using HTML and CSS to keep it clean and user-friendly. After that, I connected the form with the database using PHP so that event details can be stored properly.
+
+Basic validation was added to prevent empty fields from being submitted. I tested the form by adding sample events and confirmed that the data is saved correctly in the database.

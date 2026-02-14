@@ -51,27 +51,30 @@ if(isset($_POST['submit'])){
             elseif($existing['status'] == 'approved'){
                 $error_msg = "You are already an approved organizer.";
             }
-            elseif($existing['status'] == 'rejected'){
+           elseif(
+    $existing['status'] == 'rejected' ||
+    $existing['status'] == 'license_cancelled' ||
+    $existing['status'] == '' ||
+    is_null($existing['status'])
+){
 
-                // 🔥 UPDATE INSTEAD OF INSERT
-                $sql = "UPDATE organizers SET
-                        full_name='$full_name',
-                        mobile='$mobile',
-                        email='$form_email',
-                        company_name='$company_name',
-                        gst_number='$gst_number',
-                        website='$website',
-                        address='$address',
-                        status='pending'
-                        WHERE user_id=$user_id";
+    $sql = "UPDATE organizers SET
+            full_name='$full_name',
+            mobile='$mobile',
+            email='$form_email',
+            company_name='$company_name',
+            gst_number='$gst_number',
+            website='$website',
+            address='$address',
+            status='pending'
+            WHERE user_id=$user_id";
 
-                if(mysqli_query($conn,$sql)){
-                    $success_msg = "Re-application submitted successfully. Admin approval pending.";
-                } else {
-                    $error_msg = "Database error.";
-                }
-
-            }
+    if(mysqli_query($conn,$sql)){
+        $success_msg = "Re-application submitted successfully. Admin approval pending.";
+    } else {
+        $error_msg = "Database error.";
+    }
+}
 
         } else {
 
@@ -110,11 +113,12 @@ if(isset($_POST['submit'])){
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Organizer Registration</title>
 <link rel="stylesheet" href="../assets/style.css">
+<script src="https://unpkg.com/lucide@latest"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<bod class="organizer-page">
-
+<body class="organizer-page">
+<?php include "../includes/header.php"; ?>
 <div class="form-container">
     <a href="../index.php" class="close-btn">
   <i class="fa-solid fa-xmark"></i>
@@ -180,6 +184,7 @@ document.getElementById("profile_pic").addEventListener("change", function(){
   this.nextElementSibling.querySelector("span").innerText = fileName;
 });
 </script>
-
+<?php include "../includes/footer.php"; ?>
+<script src="../assets/script.js"></script>
 </body>
 </html>

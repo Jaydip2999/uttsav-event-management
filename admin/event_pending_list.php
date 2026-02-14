@@ -59,7 +59,7 @@ if($status == 'all'){
         SELECT e.*, o.company_name
         FROM events e
         JOIN organizers o ON o.id=e.organizer_id
-        WHERE e.status=?
+        WHERE LOWER(e.status)=LOWER(?)
         ORDER BY e.id DESC
     ");
     $stmt->bind_param("s",$status);
@@ -125,6 +125,7 @@ $q = $stmt->get_result();
 <?php else: ?>
 
 <div class="data-card">
+    
 <div class="data-meta">
 No events found.
 </div>

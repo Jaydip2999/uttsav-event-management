@@ -732,10 +732,12 @@ p {
 
 .organizer-page {
   min-height: 100vh;
-  display: flex;
+  /* display: flex; */
   justify-content: center;
   align-items: center;
   background: var(--secondary-color);
+  padding-top: 10vh;
+  justify-items: center;
 }
 
 .form-container{

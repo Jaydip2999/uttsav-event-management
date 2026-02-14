@@ -5,7 +5,7 @@
     </button>
   </div>
 <div class="sidebar" id="sidebar">
-  
+  <span class="side-header">ADMIN PANEL</span>
   <nav class="side-links">
     <a href="admin_dashboard.php">Dashboard</a>
     <a href="organizers_list.php">Organizers</a>

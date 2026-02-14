@@ -74,6 +74,16 @@ $data = mysqli_fetch_assoc($q);
 </div>
 
 <div class="details-row">
+<strong>GST No:</strong>
+<?= htmlspecialchars($data['gst_number']) ?>
+</div>
+
+<div class="details-row">
+<strong>Address:</strong>
+<?= htmlspecialchars($data['address']) ?>
+</div>
+
+<div class="details-row">
 <strong>Phone:</strong>
 <?= htmlspecialchars($data['mobile']) ?>
 </div>

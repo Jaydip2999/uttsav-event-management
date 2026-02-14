@@ -129,3 +129,10 @@ categories.forEach(cat => {
 
 /* SEARCH INPUT */
 searchInput.addEventListener("keyup", filterEvents);
+// ========================= admin side bar toggle
+
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
+  document.body.classList.toggle("menu-open");
+}

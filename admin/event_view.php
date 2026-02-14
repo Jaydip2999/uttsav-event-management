@@ -1,15 +1,22 @@
 <?php
 include '../includes/db.php';
 
-// Check event ID
+/* ================================VALIDATE EVENT ID ================================ */
+
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     die("Invalid Event ID");
 }
 
 $event_id = intval($_GET['id']);
 
+/* ================================ FETCH EVENT ================================ */
+
 $event_query = mysqli_query($conn, "
-    SELECT e.*, o.full_name AS organizer_name, o.email, o.mobile, o.profile_pic
+    SELECT e.*, 
+           o.full_name AS organizer_name, 
+           o.email, 
+           o.mobile, 
+           o.profile_pic
     FROM events e
     LEFT JOIN organizers o ON e.organizer_id = o.id
     WHERE e.id = $event_id
@@ -25,34 +32,29 @@ $event = mysqli_fetch_assoc($event_query);
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Event Details</title>
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
 
 <div class="layout">
-
-    <!-- ================= SIDEBAR ================= -->
     <?php include 'admin_sidebar.php'; ?>
-
-    <!-- ================= MAIN CONTENT ================= -->
     <div class="main">
-
         <div class="container">
-
-            <!-- Page Top -->
             <div class="page-top">
                 <h2>Event Details</h2>
                 <a href="event_pending_list.php" class="back-btn">← Back</a>
             </div>
 
             <div class="details-wrapper">
+                <!-- ================= EVENT DETAILS ===================== -->
 
-                <!-- ================= EVENT DETAILS ================= -->
                 <div class="details-card">
 
+                    <!-- EVENT HEADER -->
                     <div class="details-header">
-                        
+
                         <img src="../assets/images/events/<?php echo $event['image']; ?>" 
                              alt="Event Image" 
                              class="details-img">
@@ -62,6 +64,7 @@ $event = mysqli_fetch_assoc($event_query);
                                 <?php echo htmlspecialchars($event['title']); ?>
                             </h2>
 
+                            <!-- STATUS BADGE -->
                             <?php if($event['status'] == 'approved'): ?>
                                 <span class="status-badge status-approved">Approved</span>
                             <?php elseif($event['status'] == 'pending'): ?>
@@ -70,9 +73,10 @@ $event = mysqli_fetch_assoc($event_query);
                                 <span class="status-badge status-rejected">Rejected</span>
                             <?php endif; ?>
                         </div>
-                        
-                    </div><?php if($event['status'] == 'pending'): ?>
-                    <?php endif; ?>            
+
+                    </div>
+
+                    <!-- EVENT INFO ROWS -->
                     <div class="details-row">
                         <strong>Date:</strong>
                         <?php echo date("d M Y", strtotime($event['event_date'])); ?>
@@ -80,7 +84,7 @@ $event = mysqli_fetch_assoc($event_query);
 
                     <div class="details-row">
                         <strong>Time:</strong>
-                        <?php echo $event['event_time']; ?>
+                        <?php echo htmlspecialchars($event['event_time']); ?>
                     </div>
 
                     <div class="details-row">
@@ -118,6 +122,7 @@ $event = mysqli_fetch_assoc($event_query);
                         <?php echo nl2br(htmlspecialchars($event['description'])); ?>
                     </div>
 
+                    <!-- HIGHLIGHTS -->
                     <?php if(!empty($event['highlights'])): ?>
                         <div class="details-row">
                             <strong>Highlights:</strong>
@@ -130,28 +135,81 @@ $event = mysqli_fetch_assoc($event_query);
                             </ul>
                         </div>
                     <?php endif; ?>
-                <div class="actions" style="margin-top:15px;">
-        
-                    <a href="event_action.php?id=<?php echo $event['id']; ?>&action=approve"
-                     class="btn btn-success"
-                    onclick="return confirm('Approve this event?');"> Approve
-                     </a>
+                    <!-- ================= ACTION BUTTONS ==================== -->
 
-                     <a href="event_action.php?id=<?php echo $event['id']; ?>&action=reject"
-                        class="btn btn-danger"
-                    onclick="return confirm('Reject this event?');">Reject
-                    </a>
+                    <div class="actions">
+
+                    <?php if($event['status'] == 'pending'): ?>
+
+                        <!-- APPROVE -->
+                        <form method="POST" action="event_action.php">
+                            <input type="hidden" name="id" value="<?= $event['id'] ?>">
+                            <input type="hidden" name="type" value="approve">
+                            <button type="submit" class="btn btn-success"
+                                onclick="return confirm('Approve this event?')">
+                                Approve
+                            </button>
+                        </form>
+
+                        <!-- REJECT -->
+                        <form method="POST" action="event_action.php">
+                            <input type="hidden" name="id" value="<?= $event['id'] ?>">
+                            <input type="hidden" name="type" value="reject">
+                            <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Reject this event?')">
+                                Reject
+                            </button>
+                        </form>
+
+                    <?php elseif($event['status'] == 'approved'): ?>
+
+                        <!-- STOP -->
+                        <?php if(!$event['is_closed']): ?>
+                        <form method="POST" action="event_action.php">
+                            <input type="hidden" name="id" value="<?= $event['id'] ?>">
+                            <input type="hidden" name="type" value="stop">
+                            <button type="submit" class="btn btn-primary"
+                                onclick="return confirm('Stop this event?')">
+                                Stop Event
+                            </button>
+                        </form>
+                        <?php endif; ?>
+
+                        <!-- DELETE -->
+                        <form method="POST" action="event_action.php">
+                            <input type="hidden" name="id" value="<?= $event['id'] ?>">
+                            <input type="hidden" name="type" value="delete">
+                            <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Delete this event permanently?')">
+                                Delete
+                            </button>
+                        </form>
+
+                    <?php elseif($event['status'] == 'rejected'): ?>
+
+                        <form method="POST" action="event_action.php">
+                            <input type="hidden" name="id" value="<?= $event['id'] ?>">
+                            <input type="hidden" name="type" value="delete">
+                            <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Delete this rejected event?')">
+                                Delete
+                            </button>
+                        </form>
+
+                    <?php endif; ?>
+
                     </div>
+
                 </div>
 
                 <!-- ================= ORGANIZER DETAILS ================= -->
+
                 <div class="details-card">
 
                     <h3 class="details-title">Organizer Details</h3>
 
                     <div class="organizer-box">
 
-                        <!-- FIXED IMAGE PATH -->
                         <img src="../organizer/uploads/profile_pics/<?php echo $event['profile_pic']; ?>" 
                              alt="Organizer"
                              class="details-img">
@@ -177,10 +235,9 @@ $event = mysqli_fetch_assoc($event_query);
 
                 </div>
 
-            </div>
+            </div> 
 
         </div>
-
     </div>
 
 </div>

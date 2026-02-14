@@ -10,8 +10,8 @@ session_start();
     <title>Event Management System</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-   <link rel="stylesheet" href="assets/style.css">
-
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
 </head>
 <body>
   <?php include "includes/header.php"; ?>
@@ -103,12 +103,12 @@ session_start();
 
       <div class="info-box">
         <i class="fas fa-map-marker-alt"></i>
-        <span>Ahmedabad, Gujarat, India</span>
+        <span>bhavnagar, Gujarat, India</span>
       </div>
 
       <div class="info-box">
         <i class="fas fa-envelope"></i>
-        <span>support@eventify.com</span>
+        <span>support@uttasave.com</span>
       </div>
 
       <div class="info-box">
@@ -134,7 +134,6 @@ session_start();
 
 <?php include "includes/footer.php"; ?>
 
-<!-- JS Flag for login -->
 <script>
     window.USER_LOGGED_IN = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
 </script>

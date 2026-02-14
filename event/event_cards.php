@@ -38,7 +38,14 @@ session_start();
 
 <?php
 require "../includes/db.php";
-$result = mysqli_query($conn,"SELECT * FROM events WHERE status='approved'");
+$result = mysqli_query($conn,"
+SELECT events.* 
+FROM events
+JOIN users ON events.organizer_id = users.id
+WHERE events.status='approved'
+AND users.status='active'
+");
+
 ?>
 
 <div class="events-wrapper" id="eventList">

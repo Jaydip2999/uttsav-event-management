@@ -23,145 +23,155 @@ $all = mysqli_query($conn,"
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Manage Organizers</title>
 <link rel="stylesheet" href="admin.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
 
 <div class="layout">
-<?php include "admin_sidebar.php"; ?>
 
-<div class="main">
-<div class="container">
+  <?php include "admin_sidebar.php"; ?>
 
-<!-- ================= Pending Requests ================= -->
-<div class="page-header">
-<h1><i class="fa-solid fa-user-clock"></i> Pending Organizer Requests</h1>
-</div>
+  <div class="main">
+    <!-- ================= Pending Requests ================= -->
+    <div class="page-header">
+      <h1><i class="fa-solid fa-user-clock"></i> Pending Organizer Requests</h1>
+    </div>
 
-<div class="data-grid">
+    <div class="data-grid">
 
-<?php if(mysqli_num_rows($pending) > 0): ?>
-<?php while($r=mysqli_fetch_assoc($pending)): ?>
+      <?php if(mysqli_num_rows($pending) > 0): ?>
+        <?php while($r=mysqli_fetch_assoc($pending)): ?>
 
-<a href="organizer_view.php?id=<?= $r['id'] ?>" class="card-link">
-<div class="data-card">
+        <div class="data-card">
 
-<div class="data-card-header">
-<strong><?= htmlspecialchars($r['name']) ?></strong>
-<span class="badge primary">Pending</span>
-</div>
+          <!-- Clickable Area -->
+          <a href="organizer_view.php?id=<?= $r['id'] ?>" class="card-link">
 
-<div class="data-meta">
-<i class="fa-solid fa-envelope"></i>
-<?= htmlspecialchars($r['email']) ?>
-</div>
+            <div class="data-card-header">
+              <strong><?= htmlspecialchars($r['name']) ?></strong>
+              <span class="badge primary">Pending</span>
+            </div>
 
-<div class="data-meta">
-<i class="fa-solid fa-building"></i>
-<?= htmlspecialchars($r['company_name']) ?>
-</div>
+            <div class="data-meta">
+              <i class="fa-solid fa-envelope"></i>
+              <?= htmlspecialchars($r['email']) ?>
+            </div>
 
-<div class="data-actions">
+            <div class="data-meta">
+              <i class="fa-solid fa-building"></i>
+              <?= htmlspecialchars($r['company_name']) ?>
+            </div>
 
-<a href="organizer_action.php?id=<?= $r['id'] ?>&action=approve"
-   class="btn btn-success">
-<i class="fa-solid fa-check"></i> Approve
-</a>
+          </a>
 
-<a href="organizer_action.php?id=<?= $r['id'] ?>&action=reject"
-   class="btn btn-danger">
-<i class="fa-solid fa-xmark"></i> Reject
-</a>
-</div>
-</a>
-</div>
-</div>
-<?php endwhile; ?>
-<?php else: ?>
-<p>No pending requests.</p>
-<?php endif; ?>
+          <!-- Action Buttons -->
+          <div class="data-actions">
 
-</div>
+            <a href="organizer_action.php?id=<?= $r['id'] ?>&action=approve"
+               class="btn btn-success"
+               onclick="return confirm('Approve this organizer?')">
+               <i class="fa-solid fa-check"></i> Approve
+            </a>
 
-<!-- ================= All Organizers ================= -->
-<div class="page-header" style="margin-top:40px;">
-<h1><i class="fa-solid fa-users"></i> All Organizers</h1>
-</div>
+            <a href="organizer_action.php?id=<?= $r['id'] ?>&action=reject"
+               class="btn btn-danger"
+               onclick="return confirm('Reject this organizer?')">
+               <i class="fa-solid fa-xmark"></i> Reject
+            </a>
 
-<div class="data-grid">
+          </div>
 
-<?php while($row=mysqli_fetch_assoc($all)): ?>
-<div class="data-card">
+        </div>
 
-<div class="data-card-header">
-<strong><?= htmlspecialchars($row['name']) ?></strong>
+        <?php endwhile; ?>
+      <?php else: ?>
+        <p>No pending requests.</p>
+      <?php endif; ?>
 
-<?php if($row['status']=='approved'): ?>
-<span class="badge success">Approved</span>
-<?php elseif($row['status']=='pending'): ?>
-<span class="badge primary">Pending</span>
-<?php else: ?>
-<span class="badge danger">Rejected</span>
-<?php endif; ?>
+    </div>
 
-</div>
+    <!-- ================= All Organizers ================= -->
+    <div class="page-header" style="margin-top:40px;">
+      <h1><i class="fa-solid fa-users"></i> All Organizers</h1>
+    </div>
 
-<div class="data-meta">
-<i class="fa-solid fa-envelope"></i>
-<?= htmlspecialchars($row['email']) ?>
-</div>
+    <div class="data-grid">
 
-<div class="data-meta">
-<i class="fa-solid fa-building"></i>
-<?= htmlspecialchars($row['company_name']) ?>
-</div>
+      <?php while($row=mysqli_fetch_assoc($all)): ?>
+      <div class="data-card">
 
-<div class="data-actions">
+        <div class="data-card-header">
+          <strong><?= htmlspecialchars($row['name']) ?></strong>
 
-<?php if($row['status']=='approved'): ?>
+          <?php if($row['status']=='approved'): ?>
+            <span class="badge success">Approved</span>
+          <?php elseif($row['status']=='pending'): ?>
+            <span class="badge primary">Pending</span>
+          <?php else: ?>
+            <span class="badge danger">Rejected</span>
+          <?php endif; ?>
 
-<a href="organizer_action.php?id=<?= $row['id'] ?>&action=cancel_license"
-   onclick="return confirm('Cancel organizer license?')"
-   class="btn btn-danger">
-<i class="fa-solid fa-ban"></i> Cancel License
-</a>
+        </div>
 
-<a href="organizer_action.php?id=<?= $row['id'] ?>&action=delete"
-   onclick="return confirm('Delete organizer and all data?')"
-   class="btn btn-danger">
-<i class="fa-solid fa-trash"></i> Delete
-</a>
+        <div class="data-meta">
+          <i class="fa-solid fa-envelope"></i>
+          <?= htmlspecialchars($row['email']) ?>
+        </div>
 
-<?php elseif($row['status']=='pending'): ?>
+        <div class="data-meta">
+          <i class="fa-solid fa-building"></i>
+          <?= htmlspecialchars($row['company_name']) ?>
+        </div>
 
-<a href="organizer_action.php?id=<?= $row['id'] ?>&action=approve"
-   class="btn btn-success">
-Approve
-</a>
+        <div class="data-actions">
 
-<a href="organizer_action.php?id=<?= $row['id'] ?>&action=reject"
-   class="btn btn-danger">
-Reject
-</a>
+          <?php if($row['status']=='approved'): ?>
 
-<?php else: ?>
+            <a href="organizer_action.php?id=<?= $row['id'] ?>&action=cancel_license"
+               onclick="return confirm('Cancel organizer license?')"
+               class="btn btn-danger">
+              <i class="fa-solid fa-ban"></i> Cancel License
+            </a>
 
-<span class="badge danger">
-<i class="fa-solid fa-circle-xmark"></i> Rejected
-</span>
+            <a href="organizer_action.php?id=<?= $row['id'] ?>&action=delete"
+               onclick="return confirm('Delete organizer and all data?')"
+               class="btn btn-danger">
+              <i class="fa-solid fa-trash"></i> Delete
+            </a>
 
-<?php endif; ?>
+          <?php elseif($row['status']=='pending'): ?>
 
-</div>
-</div>
-<?php endwhile; ?>
+            <a href="organizer_action.php?id=<?= $row['id'] ?>&action=approve"
+               class="btn btn-success">
+              Approve
+            </a>
 
-</div>
+            <a href="organizer_action.php?id=<?= $row['id'] ?>&action=reject"
+               class="btn btn-danger">
+              Reject
+            </a>
 
-</div>
-</div>
+          <?php else: ?>
+
+            <span class="badge danger">
+              <i class="fa-solid fa-circle-xmark"></i> Rejected
+            </span>
+
+          <?php endif; ?>
+
+        </div>
+
+      </div>
+      <?php endwhile; ?>
+
+    </div>
+
+  </div>
+
 </div>
 
 </body>
