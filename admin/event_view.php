@@ -1,17 +1,18 @@
 <?php
-include '../includes/db.php';
+require_once("admin_check.php");
+require "../includes/db.php";
 
-/* ================================VALIDATE EVENT ID ================================ */
+/* ================= VALIDATE EVENT ID ================= */
 
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     die("Invalid Event ID");
 }
 
-$event_id = intval($_GET['id']);
+$event_id = (int)$_GET['id'];
 
-/* ================================ FETCH EVENT ================================ */
+/* ================= FETCH EVENT (Prepared Statement) ================= */
 
-$event_query = mysqli_query($conn, "
+$stmt = $conn->prepare("
     SELECT e.*, 
            o.full_name AS organizer_name, 
            o.email, 
@@ -19,228 +20,222 @@ $event_query = mysqli_query($conn, "
            o.profile_pic
     FROM events e
     LEFT JOIN organizers o ON e.organizer_id = o.id
-    WHERE e.id = $event_id
+    WHERE e.id = ?
 ");
 
-if (mysqli_num_rows($event_query) == 0) {
+$stmt->bind_param("i", $event_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows == 0) {
     die("Event not found");
 }
 
-$event = mysqli_fetch_assoc($event_query);
+$event = $result->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Event Details</title>
-    <link rel="stylesheet" href="admin.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Details</title>
+<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+
 <body>
 
 <div class="layout">
+
     <?php include 'admin_sidebar.php'; ?>
+
     <div class="main">
-        <div class="container">
-            <div class="page-top">
-                <h2>Event Details</h2>
-                <a href="event_pending_list.php" class="back-btn">← Back</a>
-            </div>
+     <a href="javascript:history.back()" class="back-btn">
+        <i class="fa-solid fa-arrow-left-long"></i> Back
+    </a>
+        <!-- PAGE TITLE (Dashboard Style) -->
+        <h2 class="dash-title">
+            <i class="fa-solid fa-calendar-check"></i> Event Details
+        </h2>
+    
+        <div class="details-wrapper">
 
-            <div class="details-wrapper">
-                <!-- ================= EVENT DETAILS ===================== -->
+            <!-- ================= EVENT DETAILS ================= -->
+            <div class="details-card">
 
-                <div class="details-card">
+                <div class="details-header">
 
-                    <!-- EVENT HEADER -->
-                    <div class="details-header">
+                    <img src="../assets/images/events/<?= htmlspecialchars($event['image']) ?>" 
+                         class="details-img">
 
-                        <img src="../assets/images/events/<?php echo $event['image']; ?>" 
-                             alt="Event Image" 
-                             class="details-img">
+                    <div>
+                        <h2 class="details-title">
+                            <?= htmlspecialchars($event['title']); ?>
+                        </h2>
 
-                        <div>
-                            <h2 class="details-title">
-                                <?php echo htmlspecialchars($event['title']); ?>
-                            </h2>
-
-                            <!-- STATUS BADGE -->
-                            <?php if($event['status'] == 'approved'): ?>
-                                <span class="status-badge status-approved">Approved</span>
-                            <?php elseif($event['status'] == 'pending'): ?>
-                                <span class="status-badge status-pending">Pending</span>
-                            <?php else: ?>
-                                <span class="status-badge status-rejected">Rejected</span>
-                            <?php endif; ?>
-                        </div>
-
-                    </div>
-
-                    <!-- EVENT INFO ROWS -->
-                    <div class="details-row">
-                        <strong>Date:</strong>
-                        <?php echo date("d M Y", strtotime($event['event_date'])); ?>
-                    </div>
-
-                    <div class="details-row">
-                        <strong>Time:</strong>
-                        <?php echo htmlspecialchars($event['event_time']); ?>
-                    </div>
-
-                    <div class="details-row">
-                        <strong>Location:</strong>
-                        <?php echo htmlspecialchars($event['location']); ?>
-                    </div>
-
-                    <div class="details-row">
-                        <strong>Category:</strong>
-                        <?php echo htmlspecialchars($event['category']); ?>
-                    </div>
-
-                    <div class="details-row">
-                        <strong>Price:</strong>
-                        ₹<?php echo number_format($event['price']); ?>
-                    </div>
-
-                    <div class="details-row">
-                        <strong>Total Seats:</strong>
-                        <?php echo $event['total_slots']; ?>
-                    </div>
-
-                    <div class="details-row">
-                        <strong>Booked Seats:</strong>
-                        <?php echo $event['booked_slots']; ?>
-                    </div>
-
-                    <div class="details-row">
-                        <strong>Remaining Seats:</strong>
-                        <?php echo $event['total_slots'] - $event['booked_slots']; ?>
-                    </div>
-
-                    <div class="details-row">
-                        <strong>Description:</strong><br>
-                        <?php echo nl2br(htmlspecialchars($event['description'])); ?>
-                    </div>
-
-                    <!-- HIGHLIGHTS -->
-                    <?php if(!empty($event['highlights'])): ?>
-                        <div class="details-row">
-                            <strong>Highlights:</strong>
-                            <ul class="details-highlights">
-                                <?php 
-                                $highlights = explode(",", $event['highlights']);
-                                foreach($highlights as $h): ?>
-                                    <li><?php echo htmlspecialchars(trim($h)); ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                    <?php endif; ?>
-                    <!-- ================= ACTION BUTTONS ==================== -->
-
-                    <div class="actions">
-
-                    <?php if($event['status'] == 'pending'): ?>
-
-                        <!-- APPROVE -->
-                        <form method="POST" action="event_action.php">
-                            <input type="hidden" name="id" value="<?= $event['id'] ?>">
-                            <input type="hidden" name="type" value="approve">
-                            <button type="submit" class="btn btn-success"
-                                onclick="return confirm('Approve this event?')">
-                                Approve
-                            </button>
-                        </form>
-
-                        <!-- REJECT -->
-                        <form method="POST" action="event_action.php">
-                            <input type="hidden" name="id" value="<?= $event['id'] ?>">
-                            <input type="hidden" name="type" value="reject">
-                            <button type="submit" class="btn btn-danger"
-                                onclick="return confirm('Reject this event?')">
-                                Reject
-                            </button>
-                        </form>
-
-                    <?php elseif($event['status'] == 'approved'): ?>
-
-                        <!-- STOP -->
-                        <?php if(!$event['is_closed']): ?>
-                        <form method="POST" action="event_action.php">
-                            <input type="hidden" name="id" value="<?= $event['id'] ?>">
-                            <input type="hidden" name="type" value="stop">
-                            <button type="submit" class="btn btn-primary"
-                                onclick="return confirm('Stop this event?')">
-                                Stop Event
-                            </button>
-                        </form>
+                        <?php if($event['status'] == 'approved'): ?>
+                            <span class="status-badge status-approved">Approved</span>
+                        <?php elseif($event['status'] == 'pending'): ?>
+                            <span class="status-badge status-pending">Pending</span>
+                        <?php else: ?>
+                            <span class="status-badge status-rejected">Rejected</span>
                         <?php endif; ?>
 
-                        <!-- DELETE -->
-                        <form method="POST" action="event_action.php">
-                            <input type="hidden" name="id" value="<?= $event['id'] ?>">
-                            <input type="hidden" name="type" value="delete">
-                            <button type="submit" class="btn btn-danger"
-                                onclick="return confirm('Delete this event permanently?')">
-                                Delete
-                            </button>
-                        </form>
+                    </div>
 
-                    <?php elseif($event['status'] == 'rejected'): ?>
+                </div>
 
-                        <form method="POST" action="event_action.php">
-                            <input type="hidden" name="id" value="<?= $event['id'] ?>">
-                            <input type="hidden" name="type" value="delete">
-                            <button type="submit" class="btn btn-danger"
-                                onclick="return confirm('Delete this rejected event?')">
-                                Delete
-                            </button>
-                        </form>
+                <div class="details-row"><strong>Date:</strong>
+                    <?= date("d M Y", strtotime($event['event_date'])); ?>
+                </div>
 
+                <div class="details-row"><strong>Time:</strong>
+                    <?= htmlspecialchars($event['event_time']); ?>
+                </div>
+
+                <div class="details-row"><strong>Location:</strong>
+                    <?= htmlspecialchars($event['location']); ?>
+                </div>
+
+                <div class="details-row"><strong>Category:</strong>
+                    <?= htmlspecialchars($event['category']); ?>
+                </div>
+
+                <div class="details-row"><strong>Price:</strong>
+                    ₹<?= number_format($event['price']); ?>
+                </div>
+
+                <div class="details-row"><strong>Total Seats:</strong>
+                    <?= $event['total_slots']; ?>
+                </div>
+
+                <div class="details-row"><strong>Booked Seats:</strong>
+                    <?= $event['booked_slots']; ?>
+                </div>
+
+                <div class="details-row"><strong>Remaining Seats:</strong>
+                    <?= $event['total_slots'] - $event['booked_slots']; ?>
+                </div>
+
+                <div class="details-row">
+                    <strong>Description:</strong><br>
+                    <?= nl2br(htmlspecialchars($event['description'])); ?>
+                </div>
+
+                <?php if(!empty($event['highlights'])): ?>
+                <div class="details-row">
+                    <strong>Highlights:</strong>
+                    <ul class="details-highlights">
+                        <?php 
+                        $highlights = explode(",", $event['highlights']);
+                        foreach($highlights as $h): ?>
+                            <li><?= htmlspecialchars(trim($h)); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <?php endif; ?>
+
+                <!-- ================= ACTION BUTTONS ================= -->
+                <div class="actions">
+
+                <?php if($event['status'] == 'pending'): ?>
+
+                    <form method="POST" action="event_action.php">
+                        <input type="hidden" name="id" value="<?= $event['id'] ?>">
+                        <input type="hidden" name="type" value="approve">
+                        <button class="btn btn-success"
+                            onclick="return confirm('Approve this event?')">
+                            Approve
+                        </button>
+                    </form>
+
+                    <form method="POST" action="event_action.php">
+                        <input type="hidden" name="id" value="<?= $event['id'] ?>">
+                        <input type="hidden" name="type" value="reject">
+                        <button class="btn btn-danger"
+                            onclick="return confirm('Reject this event?')">
+                            Reject
+                        </button>
+                    </form>
+
+                <?php elseif($event['status'] == 'approved'): ?>
+
+                    <?php if(!$event['is_closed']): ?>
+                    <form method="POST" action="event_action.php">
+                        <input type="hidden" name="id" value="<?= $event['id'] ?>">
+                        <input type="hidden" name="type" value="stop">
+                        <button class="btn btn-primary"
+                            onclick="return confirm('Stop this event?')">
+                            Stop Event
+                        </button>
+                    </form>
                     <?php endif; ?>
 
-                    </div>
+                    <form method="POST" action="event_action.php">
+                        <input type="hidden" name="id" value="<?= $event['id'] ?>">
+                        <input type="hidden" name="type" value="delete">
+                        <button class="btn btn-danger"
+                            onclick="return confirm('Delete permanently?')">
+                            Delete
+                        </button>
+                    </form>
+
+                <?php elseif($event['status'] == 'rejected'): ?>
+
+                    <form method="POST" action="event_action.php">
+                        <input type="hidden" name="id" value="<?= $event['id'] ?>">
+                        <input type="hidden" name="type" value="delete">
+                        <button class="btn btn-danger"
+                            onclick="return confirm('Delete this event?')">
+                            Delete
+                        </button>
+                    </form>
+
+                <?php endif; ?>
 
                 </div>
 
-                <!-- ================= ORGANIZER DETAILS ================= -->
+            </div>
 
-                <div class="details-card">
 
-                    <h3 class="details-title">Organizer Details</h3>
+            <!-- ================= ORGANIZER DETAILS ================= -->
 
-                    <div class="organizer-box">
+            <div class="details-card">
 
-                        <img src="../organizer/uploads/profile_pics/<?php echo $event['profile_pic']; ?>" 
-                             alt="Organizer"
-                             class="details-img">
+                <h3 class="details-title">Organizer Details</h3>
 
-                        <div>
-                            <div class="details-row">
-                                <strong>Name:</strong>
-                                <?php echo htmlspecialchars($event['organizer_name']); ?>
-                            </div>
+                <div class="organizer-box">
 
-                            <div class="details-row">
-                                <strong>Email:</strong>
-                                <?php echo htmlspecialchars($event['email']); ?>
-                            </div>
+                    <img src="../organizer/uploads/profile_pics/<?= htmlspecialchars($event['profile_pic']) ?>"
+                         class="details-img">
 
-                            <div class="details-row">
-                                <strong>Phone:</strong>
-                                <?php echo htmlspecialchars($event['mobile']); ?>
-                            </div>
+                    <div>
+                        <div class="details-row">
+                            <strong>Name:</strong>
+                            <?= htmlspecialchars($event['organizer_name']); ?>
                         </div>
 
+                        <div class="details-row">
+                            <strong>Email:</strong>
+                            <?= htmlspecialchars($event['email']); ?>
+                        </div>
+
+                        <div class="details-row">
+                            <strong>Phone:</strong>
+                            <?= htmlspecialchars($event['mobile']); ?>
+                        </div>
                     </div>
 
                 </div>
 
-            </div> 
+            </div>
 
         </div>
-    </div>
 
+    </div>
 </div>
 
+<script src="../assets/script.js"></script>
 </body>
 </html>

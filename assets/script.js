@@ -136,3 +136,8 @@ function toggleMenu(){
   document.getElementById("overlay").classList.toggle("active");
   document.body.classList.toggle("menu-open");
 }
+
+document.getElementById("notiBtn").addEventListener("click", function(e){
+    e.preventDefault();
+    document.querySelector(".noti-dropdown").classList.toggle("show");
+});

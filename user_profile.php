@@ -32,12 +32,12 @@ $isOrganizer = ($organizer && isset($organizer['id']));
 /* ===== MY CREATED EVENTS  ===== */
 $myEvents = null;
 if($isOrganizer){
-    $myQ = $conn->prepare("
-        SELECT title, event_date, status
-        FROM events
-        WHERE organizer_id=?
-        ORDER BY event_date DESC
-    ");
+$myQ = $conn->prepare("
+    SELECT id, title, event_date, status
+    FROM events
+    WHERE organizer_id=?
+    ORDER BY event_date DESC
+");
     $myQ->bind_param("i",$organizer['id']);
     $myQ->execute();
     $myEvents = $myQ->get_result();
@@ -72,7 +72,7 @@ $registeredEvents = $regQ->get_result();
 
 <body class="mp-page">
 <div class="mp-container">
-<a href="index.php" class="mp-back">← Back</a>
+<a href="index.php" class="back-btn">← Back</a>
 
 <!-- HEADER -->
 <div class="mp-header">
@@ -80,7 +80,7 @@ $registeredEvents = $regQ->get_result();
   <img class="mp-avatar" src="organizer/uploads/profile_pics/<?= htmlspecialchars($organizer['profile_pic']); ?>">
   <div class="mp-info">
     <h2><?= htmlspecialchars($organizer['full_name']); ?></h2>
-    <p>Organizer • <?= htmlspecialchars($organizer['license_status']); ?></p>
+    <p>Organizer • <?= htmlspecialchars($organizer['status']); ?></p>
     <p><?= htmlspecialchars($user['email']); ?></p>
   </div>
 <?php else: ?>
@@ -113,7 +113,7 @@ $registeredEvents = $regQ->get_result();
 <!-- RIGHT -->
 <div class="mp-card">
 <h3><?= $isOrganizer ? 'My Events' : 'Booked Events'; ?></h3>
-
+<div class="mp-scroll">
 <?php if($isOrganizer && $myEvents->num_rows==0): ?>
   <p class="mp-muted">No events created</p>
 <?php endif; ?>
@@ -121,12 +121,31 @@ $registeredEvents = $regQ->get_result();
 <?php if($isOrganizer): ?>
 <?php while($ev=$myEvents->fetch_assoc()): ?>
   <div class="mp-event">
-    <span><?= $ev['title']; ?> (<?= $ev['event_date']; ?>)</span>
-    <span class="mp-badge <?= $ev['status']; ?>"><?= $ev['status']; ?></span>
+
+    <div class="mp-event-left">
+      <strong><?= htmlspecialchars($ev['title']); ?></strong>
+      <small><?= $ev['event_date']; ?></small>
+    </div>
+
+    <div class="mp-event-right">
+      <span class="mp-badge <?= $ev['status']; ?>">
+        <?= ucfirst($ev['status']); ?>
+      </span>
+
+      <a href="event/event_form.php?id=<?= $ev['id']; ?>" 
+         class="mp-manage-btn">
+         Edit
+      </a>
+    </div>
+
   </div>
 <?php endwhile; ?>
+</div>
 <?php endif; ?>
 </div>
+<?php if($isOrganizer): ?>
+
+<?php endif; ?>
 
 </div>
 
@@ -150,6 +169,7 @@ $registeredEvents = $regQ->get_result();
 <?php endif; ?>
 
 </div>
+
 </div>
 
 </body>
