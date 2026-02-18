@@ -137,68 +137,78 @@ $event = $result->fetch_assoc();
                 <?php endif; ?>
 
                 <!-- ================= ACTION BUTTONS ================= -->
-                <div class="actions">
+                <!-- ================= ACTION BUTTONS ================= -->
+<div class="actions">
 
-                <?php if($event['status'] == 'pending'): ?>
+<?php
+$status    = $event['status'];      // pending / approved / rejected
+$is_closed = $event['is_closed'];   // 0 / 1
+?>
 
-                    <form method="POST" action="event_action.php">
-                        <input type="hidden" name="id" value="<?= $event['id'] ?>">
-                        <input type="hidden" name="type" value="approve">
-                        <button class="btn btn-success"
-                            onclick="return confirm('Approve this event?')">
-                            Approve
-                        </button>
-                    </form>
-
-                    <form method="POST" action="event_action.php">
-                        <input type="hidden" name="id" value="<?= $event['id'] ?>">
-                        <input type="hidden" name="type" value="reject">
-                        <button class="btn btn-danger"
-                            onclick="return confirm('Reject this event?')">
-                            Reject
-                        </button>
-                    </form>
-
-                <?php elseif($event['status'] == 'approved'): ?>
-
-                    <?php if(!$event['is_closed']): ?>
-                    <form method="POST" action="event_action.php">
-                        <input type="hidden" name="id" value="<?= $event['id'] ?>">
-                        <input type="hidden" name="type" value="stop">
-                        <button class="btn btn-primary"
-                            onclick="return confirm('Stop this event?')">
-                            Stop Event
-                        </button>
-                    </form>
-                    <?php endif; ?>
-
-                    <form method="POST" action="event_action.php">
-                        <input type="hidden" name="id" value="<?= $event['id'] ?>">
-                        <input type="hidden" name="type" value="delete">
-                        <button class="btn btn-danger"
-                            onclick="return confirm('Delete permanently?')">
-                            Delete
-                        </button>
-                    </form>
-
-                <?php elseif($event['status'] == 'rejected'): ?>
-
-                    <form method="POST" action="event_action.php">
-                        <input type="hidden" name="id" value="<?= $event['id'] ?>">
-                        <input type="hidden" name="type" value="delete">
-                        <button class="btn btn-danger"
-                            onclick="return confirm('Delete this event?')">
-                            Delete
-                        </button>
-                    </form>
-
-                <?php endif; ?>
-
-                </div>
-
-            </div>
+<!-- APPROVE BUTTON -->
+<?php if($status != 'approved'): ?>
+<form method="POST" action="event_action.php">
+    <input type="hidden" name="id" value="<?= $event['id'] ?>">
+    <input type="hidden" name="type" value="approve">
+    <button class="btn btn-success"
+        onclick="return confirm('Approve this event?')">
+        Approve
+    </button>
+</form>
+<?php endif; ?>
 
 
+<!-- REJECT BUTTON -->
+<?php if($status != 'rejected'): ?>
+<form method="POST" action="event_action.php">
+    <input type="hidden" name="id" value="<?= $event['id'] ?>">
+    <input type="hidden" name="type" value="reject">
+    <button class="btn btn-danger"
+        onclick="return confirm('Reject this event?')">
+        Reject
+    </button>
+</form>
+<?php endif; ?>
+
+
+<!-- CLOSE BUTTON (Only if approved & not closed) -->
+<?php if($status == 'approved' && $is_closed == 0): ?>
+<form method="POST" action="event_action.php">
+    <input type="hidden" name="id" value="<?= $event['id'] ?>">
+    <input type="hidden" name="type" value="stop">
+    <button class="btn btn-primary"
+        onclick="return confirm('Close this event?')">
+        Close Event
+    </button>
+</form>
+<?php endif; ?>
+
+
+<!-- REOPEN BUTTON (Only if approved & closed) -->
+<?php if($status == 'approved' && $is_closed == 1): ?>
+<form method="POST" action="event_action.php">
+    <input type="hidden" name="id" value="<?= $event['id'] ?>">
+    <input type="hidden" name="type" value="reopen">
+    <button class="btn btn-warning"
+        onclick="return confirm('Reopen this event?')">
+        Reopen Event
+    </button>
+</form>
+<?php endif; ?>
+
+
+<!-- DELETE BUTTON (Always visible) -->
+<form method="POST" action="event_action.php">
+    <input type="hidden" name="id" value="<?= $event['id'] ?>">
+    <input type="hidden" name="type" value="delete">
+    <button class="btn btn-dark"
+        onclick="return confirm('Delete permanently?')">
+        Delete
+    </button>
+</form>
+
+</div>
+</div>
             <!-- ================= ORGANIZER DETAILS ================= -->
 
             <div class="details-card">

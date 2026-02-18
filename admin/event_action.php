@@ -15,48 +15,101 @@ if(!isset($_POST['id']) || !isset($_POST['type'])){
 $id   = (int)$_POST['id'];
 $type = $_POST['type'];
 
-$allowed = ['approve','reject','stop','delete'];
+$allowed = ['approve','reject','stop','reopen','delete'];
 
 if(!in_array($type,$allowed)){
     header("Location: event_pending_list.php");
     exit;
 }
 
-/* Check event exists */
-$check = $conn->prepare("SELECT id FROM events WHERE id=?");
-$check->bind_param("i",$id);
-$check->execute();
-$result = $check->get_result();
+/* ================= GET EVENT + USER ================= */
 
-if($result->num_rows == 0){
-    header("Location: all_events.php");
+$eventQ = mysqli_query($conn,"
+    SELECT e.title, o.user_id
+    FROM events e
+    LEFT JOIN organizers o ON e.organizer_id = o.id
+    WHERE e.id = $id
+");
+
+if(!$eventQ || mysqli_num_rows($eventQ) == 0){
+    header("Location: event_pending_list.php");
     exit;
 }
 
-/* Perform action */
+$event = mysqli_fetch_assoc($eventQ);
+$event_title = mysqli_real_escape_string($conn, $event['title']);
+$user_id     = (int)$event['user_id'];
+
+$noti_title   = "";
+$noti_message = "";
+
+/* ================= ACTION LOGIC ================= */
+
 if($type == "approve"){
-    $stmt = $conn->prepare("UPDATE events SET status='approved' WHERE id=?");
+
+    mysqli_query($conn,"UPDATE events SET status='approved', is_closed=0 WHERE id=$id");
+
+    $noti_title   = "Event Approved";
+    $noti_message = "Your event '$event_title' has been approved by admin.";
 }
+
 elseif($type == "reject"){
-    $stmt = $conn->prepare("UPDATE events SET status='rejected' WHERE id=?");
+
+    mysqli_query($conn,"UPDATE events SET status='rejected', is_closed=0 WHERE id=$id");
+
+    $noti_title   = "Event Rejected";
+    $noti_message = "Your event '$event_title' was rejected by admin.";
 }
+
 elseif($type == "stop"){
-    $stmt = $conn->prepare("UPDATE events SET is_closed=1 WHERE id=?");
+
+    mysqli_query($conn,"UPDATE events SET is_closed=1 WHERE id=$id");
+
+    $noti_title   = "Event Closed";
+    $noti_message = "Your event '$event_title' has been closed by admin.";
 }
+
+elseif($type == "reopen"){
+
+    mysqli_query($conn,"UPDATE events SET is_closed=0 WHERE id=$id");
+
+    $noti_title   = "Event Reopened";
+    $noti_message = "Your event '$event_title' has been reopened by admin.";
+}
+
 elseif($type == "delete"){
-    $stmt = $conn->prepare("DELETE FROM events WHERE id=?");
+
+    mysqli_query($conn,"DELETE FROM events WHERE id=$id");
+
+    $noti_title   = "Event Deleted";
+    $noti_message = "Your event '$event_title' has been deleted by admin.";
 }
 
-$stmt->bind_param("i",$id);
-$stmt->execute();
+/* ================= INSERT NOTIFICATION ================= */
 
-/* Admin Log */
-$admin_id = (int)$_SESSION['user_id'];
-$action   = "Event $type (ID: $id)";
+if($user_id > 0){
+$noti_title   = mysqli_real_escape_string($conn, $noti_title);
+$noti_message = mysqli_real_escape_string($conn, $noti_message);
 
-$log = $conn->prepare("INSERT INTO admin_logs(admin_id,action) VALUES(?,?)");
-$log->bind_param("is",$admin_id,$action);
-$log->execute();
+mysqli_query($conn,"
+    INSERT INTO notifications (user_id, title, message, type)
+    VALUES ($user_id, '$noti_title', '$noti_message', 'event')
+");
+
+}
+
+/* ================= ADMIN LOG ================= */
+
+if(isset($_SESSION['user_id'])){
+
+    $admin_id = (int)$_SESSION['user_id'];
+    $action   = "Event $type (ID: $id)";
+
+    mysqli_query($conn,"
+        INSERT INTO admin_logs (admin_id, action)
+        VALUES ($admin_id, '$action')
+    ");
+}
 
 header("Location: event_pending_list.php");
 exit;

@@ -9,7 +9,7 @@ if(!$conn){
     die("DB Connection Failed");
 }
 
-// 🔥 USER MUST BE LOGGED IN
+//  USER MUST BE LOGGED IN
 if(!isset($_SESSION['user_id'])){
     header("Location: auth/login.php");
     exit;

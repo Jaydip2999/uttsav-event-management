@@ -137,7 +137,7 @@ echo "<div class='highlight'><i class='fa fa-star'></i> ".htmlspecialchars($even
 <p class="company"><?= htmlspecialchars($event['organizer_company']); ?></p>
 <p class="email">
 <?= htmlspecialchars($event['organizer_email']); ?>
-<span class="company"><?= htmlspecialchars($event['organizer_mobile']); ?></span>
+<p class="company"><?= htmlspecialchars($event['organizer_mobile']); ?></p>
 </p>
 </div>
 </div>

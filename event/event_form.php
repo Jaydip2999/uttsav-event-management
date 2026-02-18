@@ -71,6 +71,22 @@ if(isset($_POST['submit'])){
         move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $imageName);
         $image = $imageName;
     }
+        /* Payment QR Image */
+if($editMode){
+    $payment_qr = $event['payment_qr'];
+} else {
+    $payment_qr = "";
+}
+
+if(!empty($_FILES['payment_qr']['name'])){
+    $qrUploadDir = "../assets/images/payment_qr/";
+    if (!is_dir($qrUploadDir)) {
+        mkdir($qrUploadDir, 0777, true);
+    }
+    $qrName = time() . "_qr_" . basename($_FILES['payment_qr']['name']);
+    move_uploaded_file($_FILES['payment_qr']['tmp_name'], $qrUploadDir . $qrName);
+    $payment_qr = $qrName;
+}
 
     if($editMode){
 
@@ -145,6 +161,9 @@ if(isset($_POST['submit'])){
 
 <div class="event-form-container">
 
+<a href="javascript:history.back()" class="back-btn">
+<i class="fa-solid fa-arrow-left-long"></i> Back
+</a>
 <h2>
 <i class="fa-solid fa-calendar-plus"></i>
 <?= $editMode ? "Edit Event" : "Create New Event" ?>
@@ -212,14 +231,12 @@ value="<?= $editMode ? $event['price'] : 0 ?>">
 <input type="number" name="total_slots"
 value="<?= $editMode ? $event['total_slots'] : '' ?>"
 min="1" required>
-</div>
-
-<div class="full upload-area">
-<?php if($editMode && $event['image']){ ?>
-<img src="../assets/images/events/<?= $event['image']; ?>"
-style="width:120px;border-radius:8px;margin-bottom:10px;">
-<?php } ?>
-<input type="file" name="image" <?= $editMode ? "" : "required" ?>>
+</div><div class="full upload-area">
+  <input type="file" id="eventImage" name="image" required>
+  <label for="eventImage">
+    <i class="fa-solid fa-cloud-arrow-up"></i>
+    Click to Upload Event Image
+  </label>
 </div>
 
 <div class="full highlights">
