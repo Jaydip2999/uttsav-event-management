@@ -1,3 +1,4 @@
+ 
  <div class="side-header">
     <span>ADMIN PANEL</span>
     <button class="menu-btn" onclick="toggleMenu()">
@@ -34,6 +35,10 @@
 
   <a href="users.php">
     <i class="fa-solid fa-user-group"></i> Users
+  </a>
+
+  <a href="contact_messages.php">
+    <i class="fa-solid fa-envelope"></i> Contact Messages
   </a>
 
   <a href="audit_logs.php">

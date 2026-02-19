@@ -14,6 +14,7 @@ $q = mysqli_query($conn,"SELECT * FROM admin_logs ORDER BY id DESC");
 
 <link rel="stylesheet" href="admin.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="/php/event-management-system/assets/images/logo.png">
 </head>
 <body>
 

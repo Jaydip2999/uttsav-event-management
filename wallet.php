@@ -86,6 +86,7 @@ $history = $conn->query("
 <head>
 <title>Wallet</title>
 <link rel="stylesheet" href="assets/style.css">
+<link rel="icon" type="image/png" href="/php/event-management-system/assets/images/logo.png">
 </head>
 <body class="mp-page">
 

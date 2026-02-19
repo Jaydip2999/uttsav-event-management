@@ -1,18 +1,17 @@
     
     <header class="navbar">
-
-    <a href="\php\Event-management-system\index.php"><div class="logo">
+    <a href="/php/Event-management-system/index.php"><div class="logo">
          <img src="/php/Event-management-system/assets/images/logo.png" alt="logo">
 
         </div></a>
         
     
         <nav class="nav-links" id="navLinks">
-            <a href="\php\Event-management-system\index.php">Home</a>
-            <a href="\php\Event-management-system\index.php#about">About</a>
-            <a href="\php\Event-management-system\event\event_cards.php">Events</a>
-            <a href="\php\Event-management-system\index.php#services">Services</a>
-            <a href="\php\Event-management-system\index.php#contact">Contact</a>
+            <a href="/php/Event-management-system/index.php">Home</a>
+            <a href="/php/Event-management-system/index.php#about">About</a>
+            <a href="/php/Event-management-system/event/event_cards.php">Events</a>
+            <a href="/php/Event-management-system/index.php#services">Services</a>
+            <a href="/php/Event-management-system/index.php#contact">Contact</a>
         </nav>
 
         <div class="nav-icons">

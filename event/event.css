@@ -263,8 +263,13 @@ body{
 
 /* ================= EXTRA SMALL ================= */
 @media(max-width:380px){
-  .event-img img{height:115px;}
-  .lucide{width:12px;height:12px;}
+  .event-img img{
+     height: inherit;
+    }
+  .lucide{
+    width:12px;
+    height:12px;
+  }
 }
 /* ================= EVENT BOOKING PAGE ================= */
 .ev-book-page{
@@ -896,7 +901,6 @@ button:hover{
 
 .event-img{
   width:100%;
-  height:200px;          
   overflow:hidden;
   display:flex;
   align-items:center;

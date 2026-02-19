@@ -150,7 +150,7 @@ if(!empty($_FILES['payment_qr']['name'])){
 
 <link rel="stylesheet" href="../assets/style.css">
 <link rel="stylesheet" href="event.css">
-
+<link rel="icon" type="image/png" href="/php/event-management-system/assets/images/logo.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://unpkg.com/lucide@latest"></script>
 </head>

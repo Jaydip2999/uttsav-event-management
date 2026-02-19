@@ -63,7 +63,7 @@ $total_earning = $total_earning ?? 0;
 
 <link rel="stylesheet" href="admin.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+<link rel="icon" type="image/png" href="/php/event-management-system/assets/images/logo.png">
 </head>
 <body>
 

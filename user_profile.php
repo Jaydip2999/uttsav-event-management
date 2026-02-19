@@ -139,6 +139,7 @@ if($isOrganizer && $_SERVER['REQUEST_METHOD'] === 'POST'){
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
+<link rel="icon" type="image/png" href="/php/event-management-system/assets/images/logo.png">
 </head>
 
 <body class="mp-page">
