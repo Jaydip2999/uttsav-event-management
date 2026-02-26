@@ -2,9 +2,7 @@
 session_start();
 
 /* ===== DB CONNECTION ===== */
-$conn = new mysqli("localhost","root","","event_management");
-if($conn->connect_error) die("Database connection failed");
-
+include "includes/db.php";
 /* ===== AUTH CHECK ===== */
 if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'organizer'){
   header("Location: organizer/organizer_form.php");

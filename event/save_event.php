@@ -1,7 +1,6 @@
 <?php
 session_start();
-$conn = mysqli_connect("localhost","root","","event_management");
-
+include "../includes/db.php";
 $organizer_id = $_SESSION['user_id'];
 
 $imageName = time()."_".$_FILES['image']['name'];

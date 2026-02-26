@@ -55,7 +55,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
         mysqli_commit($conn);
 
-        header("Location: wallet.php");
+        header("Location: admin_withdraw.php");
         exit;
     }
 }

@@ -4,10 +4,7 @@ session_start();
 $success_msg = "";
 $error_msg   = "";
 
-$conn = mysqli_connect("localhost","root","","event_management");
-if(!$conn){
-    die("DB Connection Failed");
-}
+include "../includes/db.php"; 
 
 //  USER MUST BE LOGGED IN
 if(!isset($_SESSION['user_id'])){

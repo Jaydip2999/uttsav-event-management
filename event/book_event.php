@@ -19,31 +19,88 @@ $event = mysqli_fetch_assoc($eventQ);
 
 /* ===== CHECK STATUS ===== */
 if(strtolower($event['status']) != 'approved') die("Event Closed");
+/* ===== REAL BOOKED SLOTS ===== */
+$slotQ = mysqli_prepare($conn,"
+    SELECT COALESCE(SUM(quantity),0) AS total_booked
+    FROM bookings
+    WHERE event_id = ?
+    AND status IN ('confirmed','pending')
+");
+mysqli_stmt_bind_param($slotQ,"i",$event_id);
+mysqli_stmt_execute($slotQ);
+$res = mysqli_stmt_get_result($slotQ);
+$slotData = mysqli_fetch_assoc($res);
 
-$available = $event['total_slots'] - $event['booked_slots'];
+$booked = (int)$slotData['total_booked'];
+$available = max(0, $event['total_slots'] - $booked);
+
 if($available <= 0) die("Slots Full");
 
 /* ===== REGISTER ===== */
 if(isset($_POST['confirm'])){
 
     $quantity = (int)$_POST['quantity'];
+$latestQ = mysqli_prepare($conn,"
+    SELECT total_slots FROM events WHERE id = ?
+");
+mysqli_stmt_bind_param($latestQ,"i",$event_id);
+mysqli_stmt_execute($latestQ);
+$resLatest = mysqli_stmt_get_result($latestQ);
+$latest = mysqli_fetch_assoc($resLatest);
 
+/* Real-time booked again */
+$bookQ = mysqli_prepare($conn,"
+    SELECT COALESCE(SUM(quantity),0) AS total_booked
+    FROM bookings
+    WHERE event_id = ?
+    AND status IN ('confirmed','pending')
+");
+mysqli_stmt_bind_param($bookQ,"i",$event_id);
+mysqli_stmt_execute($bookQ);
+$resBook = mysqli_stmt_get_result($bookQ);
+$bookData = mysqli_fetch_assoc($resBook);
+
+$available = max(0, $latest['total_slots'] - $bookData['total_booked']);
     if($quantity <= 0 || $quantity > $available){
-        $error = "Invalid ticket quantity";
+        $error = "Only $available seats left";
     } else {
 
         $total_price = $event['price'] * $quantity;
 
-        // FREE EVENT
+        /* ===== FREE EVENT ===== */
         if($event['price'] <= 0){
+
+          mysqli_begin_transaction($conn);
+try{
+
+    mysqli_query($conn,"
+        INSERT INTO bookings (user_id,event_id,quantity,total_price,status)
+        VALUES ($user_id,$event_id,$quantity,0,'confirmed')
+    ");
+
+    mysqli_commit($conn);
+    $success = true;
+
+}catch(Exception $e){
+    mysqli_rollback($conn);
+    $error = "Something went wrong";
+}
+        }
+
+        /* ===== PAID EVENT ===== */
+        else{
+
+            $txn = mysqli_real_escape_string($conn,$_POST['transaction_id']);
 
             mysqli_begin_transaction($conn);
             try{
+
                 mysqli_query($conn,"
-                    INSERT INTO bookings (user_id,event_id,quantity,total_price,status)
-                    VALUES ($user_id,$event_id,$quantity,0,'confirmed')
+                    INSERT INTO bookings (user_id,event_id,quantity,total_price,transaction_id,status)
+                    VALUES ($user_id,$event_id,$quantity,$total_price,'$txn','pending')
                 ");
 
+                // Reserve seats immediately
                 mysqli_query($conn,"
                     UPDATE events 
                     SET booked_slots = booked_slots + $quantity
@@ -51,25 +108,12 @@ if(isset($_POST['confirm'])){
                 ");
 
                 mysqli_commit($conn);
-                $success = true;
+                $payment_pending = true;
 
             }catch(Exception $e){
                 mysqli_rollback($conn);
                 $error = "Something went wrong";
             }
-        }
-
-        // PAID EVENT
-        else{
-
-            $txn = mysqli_real_escape_string($conn,$_POST['transaction_id']);
-
-            mysqli_query($conn,"
-                INSERT INTO bookings (user_id,event_id,quantity,total_price,transaction_id,status)
-                VALUES ($user_id,$event_id,$quantity,$total_price,'$txn','pending')
-            ");
-
-            $payment_pending = true;
         }
     }
 }

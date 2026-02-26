@@ -129,7 +129,7 @@ $total_earning = $total_earning ?? 0;
     <div class="icon"><i class="fa-solid fa-wallet"></i></div>
     <div>
       <h4>Admin Earnings</h4>
-      <p>₹<?= number_format($total_earning,2) ?></p>
+      <p>₹<?= number_format($platformEarning,2) ?></p>
       <span>Total commission</span>
     </div>
   </div>

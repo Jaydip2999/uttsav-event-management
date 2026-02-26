@@ -71,13 +71,29 @@ AND users.status='active'
       </span>
     </div>
 
-    <div class="slot-info">
-      <span class="total"><?= $row['total_slots'] ?></span>
-      <span class="available">/
-        <?= $row['total_slots'] - $row['booked_slots'] ?>
-      </span>
-    </div>
+<?php
+// Get real booked slots from bookings table
+$event_id = $row['id'];
 
+$stmt = $conn->prepare("
+    SELECT COALESCE(SUM(quantity),0) AS total_booked
+    FROM bookings
+    WHERE event_id = ?
+    AND status IN ('confirmed','pending')
+");
+$stmt->bind_param("i", $event_id);
+$stmt->execute();
+$res = $stmt->get_result();
+$data = $res->fetch_assoc();
+
+$booked = (int)$data['total_booked'];
+$available = max(0, $row['total_slots'] - $booked);
+?>
+
+<div class="slot-info">
+  <span class="total"><?= $row['total_slots'] ?></span>
+  <span class="available">/ <?= $available ?></span>
+</div>
     <a href="event_full_details.php?id=<?= $row['id'] ?>">
       <button class="event-btn">View Details</button>
     </a>

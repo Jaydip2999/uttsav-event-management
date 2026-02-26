@@ -51,15 +51,19 @@ if (!empty($event['image'])) {
         $eventImage = "../assets/images/events/".$event['image'];
     }
 }
+/* ================= BOOKING COUNT (FINAL FIX) ================= */
 
-/* ================= BOOKING COUNT ================= */
-
-$stmt2 = $conn->prepare("SELECT COUNT(*) as total FROM bookings WHERE event_id=?");
-$stmt2->bind_param("i",$event_id);
+$stmt2 = $conn->prepare("
+    SELECT COALESCE(SUM(quantity),0) AS total_booked
+    FROM bookings
+    WHERE event_id = ?
+");
+$stmt2->bind_param("i", $event_id);
 $stmt2->execute();
-$bookingResult = $stmt2->get_result()->fetch_assoc();
+$result2 = $stmt2->get_result();
+$row2 = $result2->fetch_assoc();
 
-$bookedGuests = (int)$bookingResult['total'];
+$bookedGuests = (int)$row2['total_booked'];
 $maxGuests = (int)$event['total_slots'];
 $availableSlots = max(0, $maxGuests - $bookedGuests);
 
